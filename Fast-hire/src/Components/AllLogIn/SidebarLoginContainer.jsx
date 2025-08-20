@@ -7,6 +7,7 @@ import EmployerLogin from "./EmployerLogin";
 import HRLogin from "./HRLogin";
 import "./SidebarLogin.css";
 // Logo removed as the file doesn't exist
+//logo taka hite 
 
 // Add login circles data and animation variants
 const loginCircles = [
