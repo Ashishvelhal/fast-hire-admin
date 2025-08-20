@@ -1,39 +1,38 @@
-// src/components/Auth/StaffLogin.jsx
+// src/components/Auth/HRLogin.jsx
 import React, { useState } from "react";
 import { Input, Button, Typography, message } from "antd";
 import { IdcardOutlined, LockOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { loginStaff } from "./LoginService";
+import { loginHR } from "./LoginService";
 import LoadingOverlay from "../Common/LoadingOverlay";
 
-const StaffLogin = () => {
-  const [email, setStaffEmail] = useState("");
+const HRLogin = () => {
+  const [email, setHREmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const handleLogin = async () => {
     if (!email || !password) {
-      message.error("Please enter both Staff ID and password");
+      message.error("Please enter both HR Email and password");
       return;
     }
   
     setLoading(true);
     try {
-      const response = await loginStaff({ email, password });
+      const response = await loginHR({ email, password });
       const { message: successMessage, token, data } = response;
   
-      message.success(successMessage || "Staff Login Successful");
+      message.success(successMessage || "HR Login Successful");
   
       // Store data in sessionStorage
       sessionStorage.setItem("authToken", token);
-      sessionStorage.setItem("email", data.staffEmail);
-      sessionStorage.setItem("enabledSystems", JSON.stringify(data.systems));
-      sessionStorage.setItem("role", "staff");
-      sessionStorage.setItem("staffName", data.staffName);
+      sessionStorage.setItem("email", data.hrEmail);
+      sessionStorage.setItem("role", "hr");
+      sessionStorage.setItem("hrName", data.hrName);
       sessionStorage.setItem("branchCode", data.branchCode);
 
-      // Save dashboard/settings permissions for staff login
+      // Save dashboard/settings permissions for HR login
       if (data.canssetting !== undefined) {
         sessionStorage.setItem("canssetting", data.canssetting);
       }
@@ -101,9 +100,9 @@ const StaffLogin = () => {
       <LoadingOverlay loading={loading} />
       <div className="login-form">
         <Typography.Title level={4} className="form-title">
-          Staff Access
+          HR Portal
         </Typography.Title>
-        <p className="form-subtitle">Enter your staff credentials</p>
+        <p className="form-subtitle">Enter your HR credentials</p>
         
         <motion.div
           initial={{ opacity: 0, y: 10 }}
@@ -112,10 +111,10 @@ const StaffLogin = () => {
         >
           <Input
             size="large"
-            placeholder="Staff Email"
+            placeholder="HR Email"
             prefix={<IdcardOutlined className="input-icon" />}
             value={email}
-            onChange={(e) => setStaffEmail(e.target.value)}
+            onChange={(e) => setHREmail(e.target.value)}
             className="styled-input"
           />
         </motion.div>
@@ -154,4 +153,4 @@ const StaffLogin = () => {
   );
 };
 
-export default StaffLogin;
+export default HRLogin;

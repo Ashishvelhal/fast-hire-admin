@@ -1,44 +1,42 @@
-// src/components/Auth/BranchLogin.jsx
+// src/components/Auth/EmployerLogin.jsx
 import React, { useState } from "react";
 import { Input, Button, Typography, message } from "antd";
-import { BranchesOutlined, LockOutlined, MailOutlined } from "@ant-design/icons";
+import { UserOutlined, LockOutlined, MailOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { loginBranch } from "./LoginService";
+import { loginEmployer } from "./LoginService";
 import LoadingOverlay from "../Common/LoadingOverlay";
 
-const BranchLogin = () => {
-  const [branchCode, setBranchCode] = useState("");
+const EmployerLogin = () => {
+  const [employerId, setEmployerId] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleLogin = async () => {
-    if (!branchCode || !email || !password) {
-      message.error("Please enter both Branch ID and password");
+    if (!employerId || !email || !password) {
+      message.error("Please enter both Employer ID and password");
       return;
     }
 
     setLoading(true);
     try {
-      const response = await loginBranch({ branchCode, email, password });
+      const response = await loginEmployer({ employerId, email, password });
       // Use 'massage' due to backend typo, fallback to 'message'
-      const successMessage = response.massage || response.message || "Branch Login Successful";
+      const successMessage = response.massage || response.message || "Employer Login Successful";
       const { token, data } = response;
 
       message.success(successMessage);
 
       sessionStorage.setItem("authToken", token);
-      sessionStorage.setItem("branchName", data.branchName);
-      sessionStorage.setItem("branchCode", data.branchCode);
-      sessionStorage.setItem("bid", data.bid);
-      sessionStorage.setItem("email", data.branchEmail);
-      sessionStorage.setItem("role", "branch");
+      sessionStorage.setItem("employerName", data.employerName);
+      sessionStorage.setItem("employerId", data.employerId);
+      sessionStorage.setItem("eid", data.eid);
+      sessionStorage.setItem("email", data.employerEmail);
+      sessionStorage.setItem("role", "employer");
 
-      // Remove systems/instituteEmail logic since not present in response
-
-      navigate("/wayabroadadmin/admin/dashboard");
+      navigate("/employer/dashboard");
     } catch (error) {
       message.error("Login failed. Please check your credentials.");
       console.error("Login failed:", error);
@@ -52,9 +50,9 @@ const BranchLogin = () => {
       <LoadingOverlay loading={loading} />
       <div className="login-form">
         <Typography.Title level={4} className="form-title">
-          Branch Access
+          Employer Portal
         </Typography.Title>
-        <p className="form-subtitle">Manage your branch operations</p>
+        <p className="form-subtitle">Access your employer account</p>
         
         <motion.div
           initial={{ opacity: 0, y: 10 }}
@@ -63,10 +61,10 @@ const BranchLogin = () => {
         >
           <Input
             size="large"
-            placeholder="Branch Code"
-            prefix={<BranchesOutlined className="input-icon" />}
-            value={branchCode}
-            onChange={(e) => setBranchCode(e.target.value)}
+            placeholder="Employer ID"
+            prefix={<UserOutlined className="input-icon" />}
+            value={employerId}
+            onChange={(e) => setEmployerId(e.target.value)}
             className="styled-input"
           />
         </motion.div>
@@ -77,7 +75,7 @@ const BranchLogin = () => {
         >
           <Input
             size="large"
-            placeholder="Branch Email"
+            placeholder="Company Email"
             prefix={<MailOutlined className="input-icon" />}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -119,4 +117,4 @@ const BranchLogin = () => {
   );
 };
 
-export default BranchLogin;
+export default EmployerLogin;

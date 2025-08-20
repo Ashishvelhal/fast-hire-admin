@@ -43,6 +43,26 @@ export const loginDepartment = async (loginRequest) => {
   return response.data;
 };
 
+// Employer Login API
+export const loginEmployer = async (loginRequest) => {
+  const response = await apiClient.post("/employerlogin", loginRequest, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  return response.data;
+};
+
+// HR Login API
+export const loginHR = async (loginRequest) => {
+  const response = await apiClient.post("/hrlogin", loginRequest, {
+    headers: {
+      "Content-Type": "application/json"
+    },
+  });
+  return response.data;
+};
+
 // Staff Login API
 export const loginStaff = async (loginRequest) => {
   const response = await apiClient.post("/stafflogin", loginRequest, {

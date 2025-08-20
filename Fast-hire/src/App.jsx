@@ -1,35 +1,69 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { Suspense, lazy } from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
+import PrivateRoute from "./Components/Common/PrivateRoute";
+import LoadingOverlay from "./Components/Common/LoadingOverlay";
+import ErrorBoundary from "./Components/Common/ErrorBoundary";
+import { ThemeProvider } from "@mui/material/styles";
+import theme from "./Components/Layouts/Theme.jsx";
 
-function App() {
-  const [count, setCount] = useState(0)
+// Direct imports
+import MainDashboard from "./Components/MainDashBoard/MainDashboard";
 
+// Lazy-loaded components
+const SidebarLoginContainer = lazy(() => import("./Components/AllLogIn/SidebarLoginContainer"));
+const Layout = lazy(() => import("./Components/Layouts/Layout.jsx"));
+const JobPost = lazy(() => import('./Components/JobPost/JobPost'));
+const JobRecord = lazy(() => import('./Components/JobRecord/JobRecord'));
+const Settings = lazy(() => import('./Components/Settings/Settings'));
+
+// Application form component (if needed)
+const ApplicationForm = lazy(() => import('./Components/ApplicationForm/ApplicationForm'));
+
+const App = () => {
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    <ThemeProvider theme={theme}>
+      <Suspense fallback={<LoadingOverlay loading={true} />}>
+        <ErrorBoundary>
+          <Routes>
+            {/* Redirect root to login */}
+            <Route path="/" element={<Navigate to="/fasthireadmin" replace />} />
 
-export default App
+            {/* Public login route */}
+            <Route path="/fasthireadmin" element={<SidebarLoginContainer />} />
+
+            {/* Protected admin routes */}
+            <Route
+              path="/fasthireadmin/admin"
+              element={
+                <PrivateRoute>
+                  <Layout />
+                </PrivateRoute>
+              }
+            >
+              {/* Main Dashboard */}
+              <Route index element={<Navigate to="dashboard" replace />} />
+              <Route path="dashboard" element={<MainDashboard />} />
+
+              {/* Job Post Section */}
+              <Route path="jobpost" element={<JobPost />} />
+
+              {/* Application Form */}
+              <Route path="applicationform" element={<ApplicationForm />} />
+
+              {/* Job Record */}
+              <Route path="jobrecord" element={<JobRecord />} />
+
+              {/* Settings */}
+              <Route path="settings" element={<Settings />} />
+            </Route>
+
+            {/* Catch-all redirect */}
+            <Route path="*" element={<Navigate to="/fasthireadmin" replace />} />
+          </Routes>
+        </ErrorBoundary>
+      </Suspense>
+    </ThemeProvider>
+  );
+};
+
+export default App;

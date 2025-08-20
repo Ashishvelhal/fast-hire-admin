@@ -3,10 +3,10 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { UserOutlined, BranchesOutlined, AppstoreOutlined, TeamOutlined } from "@ant-design/icons";
 import SuperAdminLogin from "./SuperAdminLogin";
-import BranchLogin from "./BranchLogin";
-import StaffLogin from "./StaffLogin";
+import EmployerLogin from "./EmployerLogin";
+import HRLogin from "./HRLogin";
 import "./SidebarLogin.css";
-import logo from "../../assets/Images/LOGO.png"; // Adjust the path as necessary
+// Logo removed as the file doesn't exist
 
 // Add login circles data and animation variants
 const loginCircles = [
@@ -40,11 +40,18 @@ const SidebarLoginContainer = () => {
       color: "#2E86C1"
     },
     {
-      key: "branch",
-      label: "Branch",
+      key: "employer",
+      label: "Employer",
       icon: <BranchesOutlined />,
-      component: <BranchLogin />,
+      component: <EmployerLogin />,
       color: "#16A085"
+    },
+    {
+      key: "hr",
+      label: "HR",
+      icon: <TeamOutlined />,
+      component: <HRLogin />,
+      color: "#8E44AD"
     },
     // {
     //   key: "department",
@@ -52,14 +59,7 @@ const SidebarLoginContainer = () => {
     //   icon: <AppstoreOutlined />,
     //   component: <DepartmentLogin />,
     //   color: "#E67E22"
-    // },
-    {
-      key: "staff",
-      label: "Staff",
-      icon: <TeamOutlined />,
-      component: <StaffLogin />,
-      color: "#8E44AD"
-    }
+    // }
   ];
 
   return (
@@ -123,10 +123,9 @@ const SidebarLoginContainer = () => {
       <div className="sidebar-login-admin">
         {/* Sidebar navigation */}
         <div className="login-sidebar">
-          <div className="sidebar-logo">
-            <img src={logo} alt="Logo" />
+          <div className="login-header">
+            <h2>Fast Hire Admin</h2>
           </div>
-          
           <div className="sidebar-nav">
             {loginTypes.map((type) => (
               <motion.div
@@ -147,7 +146,7 @@ const SidebarLoginContainer = () => {
           </div>
           
           <div className="sidebar-footer">
-            <p>© 2025 Wayabroad PVT. LTD.</p>
+            <p>© 2025 FastHire PVT. LTD.</p>
           </div>
         </div>
         

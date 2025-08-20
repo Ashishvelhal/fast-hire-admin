@@ -167,7 +167,7 @@ const Header = memo(() => {
                 }
               }}
             >
-              Wayabroad
+              FastHire
             </Typography>
           </Link>
         </Box>
