@@ -16,7 +16,7 @@ import {
   Fade
 } from "@mui/material";
 import AccountCircle from "@mui/icons-material/AccountCircle";
-import logo from "../../assets/Images/LOGO.png"; // Adjust the path as needed
+import logo from "../../assets/Fasthire Logo .png"; // Adjust the path as needed
 import { logout } from "../Common/authUtils"; // Adjust path as needed
 
 const Header = memo(() => {
@@ -135,8 +135,8 @@ const Header = memo(() => {
               alt="Logo"
               sx={{
                 marginRight: "10px",
-                height: "38px",
-                width: "38px",
+                height: "50px",
+                width: "50px",
                 transition: "all 0.3s ease",
                 '&:hover': {
                   transform: 'scale(1.05)'

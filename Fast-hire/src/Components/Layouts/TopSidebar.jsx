@@ -4,9 +4,9 @@ import { Box, Button, Stack, Paper } from "@mui/material";
 import LoadingOverlay from "../Common/LoadingOverlay";
 
 const navItems = [
-  { label: "Create Application", to: "/wayabroadadmin/admin/application" },
-  { label: "List", to: "/wayabroadadmin/admin/application/ApplicationList" },
-//   { label: "Partner web List", to: "/wayabroadadmin/admin/partner/web" },
+  { label: "Create Application", to: "/admin/fasthireadminlayout/admin/application" },
+  { label: "List", to: "/admin/fasthireadminlayout/admin/application/ApplicationList" },
+//   { label: "Partner web List", to: "/admin/fasthireadminlayout/admin/partner/web" },
 ];
 
 const TopSidebar = () => {
@@ -16,7 +16,7 @@ const TopSidebar = () => {
 
   const filteredNavItems = navItems.filter((item) => {
     if (
-      role === "superAdmin" &&
+      role === "SUPERADMIN" &&
       (item.label === "Lead Settings" || item.label === "To Do List" || item.label === "FeedBack")
     ) {
       return false;

@@ -14,10 +14,10 @@ const SidebarLoginContainer = lazy(() => import("./Components/AllLogIn/SidebarLo
 const Layout = lazy(() => import("./Components/Layouts/Layout.jsx"));
 const JobPost = lazy(() => import('./Components/JobPost/JobPost'));
 const JobRecord = lazy(() => import('./Components/JobRecord/JobRecord'));
+const Employe = lazy(() => import('./Components/Employe/Employe.jsx'));
 const Settings = lazy(() => import('./Components/Settings/Settings'));
-
-// Application form component (if needed)
 const ApplicationForm = lazy(() => import('./Components/ApplicationForm/ApplicationForm'));
+const SuperAdminRoutes = lazy(() => import('./routes/SuperAdminRoutes'));
 
 const App = () => {
   return (
@@ -25,45 +25,34 @@ const App = () => {
       <Suspense fallback={<LoadingOverlay loading={true} />}>
         <ErrorBoundary>
           <Routes>
-            {/* Redirect root to login */}
-            <Route path="/" element={<Navigate to="/fasthireadmin" replace />} />
-
-            {/* Public login route */}
-            <Route path="/fasthireadmin" element={<SidebarLoginContainer />} />
-
-            {/* Protected admin routes */}
+            {/* Admin Routes */}
+            <Route path="/admin" element={<SidebarLoginContainer />} />
             <Route
-              path="/fasthireadmin/admin"
+              path="/admin/dashboard"
               element={
                 <PrivateRoute>
                   <Layout />
                 </PrivateRoute>
-              }
-            >
-              {/* Main Dashboard */}
-              <Route index element={<Navigate to="dashboard" replace />} />
-              <Route path="dashboard" element={<MainDashboard />} />
-
-              {/* Job Post Section */}
+              }>
+              <Route index element={<MainDashboard />} />
               <Route path="jobpost" element={<JobPost />} />
-
-              {/* Application Form */}
               <Route path="applicationform" element={<ApplicationForm />} />
-
-              {/* Job Record */}
               <Route path="jobrecord" element={<JobRecord />} />
-
-              {/* Settings */}
+              <Route path="employe" element={<Employe />} />
               <Route path="settings" element={<Settings />} />
+              <Route path="*" element={<Navigate to="dashboard" replace />} />
             </Route>
 
-            {/* Catch-all redirect */}
-            <Route path="*" element={<Navigate to="/fasthireadmin" replace />} />
+            {/* Super Admin Routes */}
+            <Route path="/super-admin/*" element={<SuperAdminRoutes />} />
+
+            {/* Default redirects */}
+            <Route path="/" element={<Navigate to="/admin" replace />} />
+            <Route path="*" element={<Navigate to="/admin" replace />} />
           </Routes>
         </ErrorBoundary>
       </Suspense>
     </ThemeProvider>
   );
 };
-
 export default App;

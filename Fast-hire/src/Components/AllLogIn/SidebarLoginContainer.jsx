@@ -6,32 +6,9 @@ import SuperAdminLogin from "./SuperAdminLogin";
 import EmployerLogin from "./EmployerLogin";
 import HRLogin from "./HRLogin";
 import "./SidebarLogin.css";
-// Logo removed as the file doesn't exist
-//logo taka hite 
-
-// Add login circles data and animation variants
-const loginCircles = [
-  { label: "Academy Teacher", color: "#1890ff", path: "/admission-teacher" },
-  { label: "Student Teacher", color: "#52c41a", path: "/student-teacher-login" },
-  { label: "Academy Student", color: "#faad14", path: "/admissionuser" },
-  { label: "Student", color: "#eb2f96", path: "/student-login" },
-  { label: "Employee", color: "#722ed1", path: "/employee-login" },
-];
-
-const circleVariants = {
-  hidden: { opacity: 0, scale: 0.7, y: 30 },
-  visible: (i) => ({
-    opacity: 1,
-    scale: 1,
-    y: 0,
-    transition: { delay: 0.1 + i * 0.12, type: "spring", stiffness: 200 },
-  }),
-};
 
 const SidebarLoginContainer = () => {
   const [activeType, setActiveType] = useState("superAdmin");
-
-  // Define login types with their components and icons
   const loginTypes = [
     {
       key: "superAdmin",
@@ -65,67 +42,18 @@ const SidebarLoginContainer = () => {
 
   return (
     <div className="sidebar-login-container" style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100vh" }}>
-      {/* Animated Circles Panel (fully left, outside main card) */}
-      {/* <div
-        style={{
-          width: 120,
-          minHeight: 420,
-          background: "#fff",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          boxShadow: "2px 0 8px #f0f1f2",
-          borderRadius: "16px 0 0 16px",
-          marginRight: 28,
-          padding: "24px 0",
-          zIndex: 2,
-        }}
-      > */}
-        {/* <div style={{ marginBottom: 18, fontWeight: 600, fontSize: 14, color: "#333" }}>Other Logins</div> */}
-        {/* <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
-          {loginCircles.map((circle, i) => (
-            <motion.div
-              key={circle.label}
-              custom={i}
-              initial="hidden"
-              animate="visible"
-              variants={circleVariants}
-              whileHover={{ scale: 1.09, boxShadow: "0 0 0 4px #e6f7ff" }}
-              style={{
-                width: 64,
-                height: 64,
-                borderRadius: "50%",
-                background: circle.color,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                cursor: "pointer",
-                boxShadow: "0 2px 12px rgba(0,0,0,0.08)",
-                transition: "box-shadow 0.2s",
-                color: "#fff",
-                fontWeight: 500,
-                fontSize: 11,
-                textAlign: "center",
-                userSelect: "none",
-                overflow: "hidden",
-                padding: 0,
-              }}
-              onClick={() => window.location.href = circle.path}
-            >
-              <span style={{ lineHeight: 1.1, width: "90%", wordBreak: "break-word" }}>
-                {circle.label}
-              </span>
-            </motion.div>
-          ))}
-        </div> */}
-      {/* </div> */}
+
       {/* Main login card */}
       <div className="sidebar-login-admin">
         {/* Sidebar navigation */}
         <div className="login-sidebar">
           <div className="login-header">
-            <h2>Fast Hire Admin</h2>
+            <img
+              src="/FasthireLogo_Transparent.png"
+              alt="Fast Hire Logo"
+              className="login-logo"
+            />
+
           </div>
           <div className="sidebar-nav">
             {loginTypes.map((type) => (
@@ -145,12 +73,12 @@ const SidebarLoginContainer = () => {
               </motion.div>
             ))}
           </div>
-          
+
           <div className="sidebar-footer">
             <p>© 2025 FastHire PVT. LTD.</p>
           </div>
         </div>
-        
+
         {/* Main content area with login form */}
         <div className="login-content">
           <AnimatePresence mode="wait">
@@ -162,8 +90,8 @@ const SidebarLoginContainer = () => {
               transition={{ duration: 0.3 }}
               className="login-form-wrapper"
             >
-              <div 
-                className="login-header-color" 
+              <div
+                className="login-header-color"
                 style={{ backgroundColor: loginTypes.find(t => t.key === activeType).color }}
               ></div>
               {loginTypes.find(t => t.key === activeType).component}

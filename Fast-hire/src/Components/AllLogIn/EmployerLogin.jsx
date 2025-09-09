@@ -4,7 +4,7 @@ import { Input, Button, Typography, message } from "antd";
 import { UserOutlined, LockOutlined, MailOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { loginEmployer } from "./LoginService";
+import { loginEmployer } from "../AllLogIn/LoginService";
 import LoadingOverlay from "../Common/LoadingOverlay";
 
 const EmployerLogin = () => {
@@ -15,15 +15,14 @@ const EmployerLogin = () => {
   const navigate = useNavigate();
 
   const handleLogin = async () => {
-    if (!employerId || !email || !password) {
+    if ( !email || !password) {
       message.error("Please enter both Employer ID and password");
       return;
     }
 
     setLoading(true);
     try {
-      const response = await loginEmployer({ employerId, email, password });
-      // Use 'massage' due to backend typo, fallback to 'message'
+      const response = await loginEmployer({ email, password });
       const successMessage = response.massage || response.message || "Employer Login Successful";
       const { token, data } = response;
 
@@ -34,9 +33,9 @@ const EmployerLogin = () => {
       sessionStorage.setItem("employerId", data.employerId);
       sessionStorage.setItem("eid", data.eid);
       sessionStorage.setItem("email", data.employerEmail);
-      sessionStorage.setItem("role", "employer");
+      sessionStorage.setItem("role", "EMPLOYER");
 
-      navigate("/employer/dashboard");
+      navigate("/admin/fasthireadminlayout/dashboard");
     } catch (error) {
       message.error("Login failed. Please check your credentials.");
       console.error("Login failed:", error);

@@ -45,24 +45,24 @@ const HRLogin = () => {
 
       // Mapping of normalized system names to sidebar paths
       const systemNameToPath = {
-        "lead management software": "/wayabroadadmin/admin/inquiry",
-        "inquiry management system": "/wayabroadadmin/admin/inquiry",
-        "admission management software": "/wayabroadadmin/admin/admission",
-        "admission": "/wayabroadadmin/admin/admission",
-        "income/expense management software": "/wayabroadadmin/admin/incomeexpense",
-        "income & expense": "/wayabroadadmin/admin/incomeexpense",
-        "income": "/wayabroadadmin/admin/incomeexpense",
-        "student management software": "/wayabroadadmin/admin/layringstudent",
-        "student": "/wayabroadadmin/admin/layringstudent",
-        "employee management software": "/wayabroadadmin/admin/layringemployee",
-        "study-point management software": "/wayabroadadmin/admin/layringstudypoint",
-        "hostel management software": "/wayabroadadmin/admin/layringhosteladmin",
-        "shipment management software": "/wayabroadadmin/admin/ShipmentSystem",
-        "payroll management software": "/wayabroadadmin/admin/PayrollSystem",
-        "ebook management software": "/wayabroadadmin/admin/E-BookSystem",
-        "e-book management software": "/wayabroadadmin/admin/E-BookSystem",
-        "website management software": "/wayabroadadmin/admin/websiteadmin",
-        "project management software": "/wayabroadadmin/admin/projectmanagementadmin", // Add this if you have classroom route
+        "lead management software": "/admin/fasthireadminlayout/inquiry",
+        "inquiry management system": "/admin/fasthireadminlayout/inquiry",
+        "admission management software": "/admin/fasthireadminlayout/admission",
+        "admission": "/admin/fasthireadminlayout/admission",
+        "income/expense management software": "/admin/fasthireadminlayout/incomeexpense",
+        "income & expense": "/admin/fasthireadminlayout/incomeexpense",
+        "income": "/admin/fasthireadminlayout/incomeexpense",
+        "student management software": "/admin/fasthireadminlayout/layringstudent",
+        "student": "/admin/fasthireadminlayout/layringstudent",
+        "employee management software": "/admin/fasthireadminlayout/layringemployee",
+        "study-point management software": "/admin/fasthireadminlayout/layringstudypoint",
+        "hostel management software": "/admin/fasthireadminlayout/layringhosteladmin",
+        "shipment management software": "/admin/fasthireadminlayout/ShipmentSystem",
+        "payroll management software": "/admin/fasthireadminlayout/PayrollSystem",
+        "ebook management software": "/admin/fasthireadminlayout/E-BookSystem",
+        "e-book management software": "/admin/fasthireadminlayout/E-BookSystem",
+        "website management software": "/admin/fasthireadminlayout/websiteadmin",
+        "project management software": "/admin/fasthireadminlayout/projectmanagementadmin", // Add this if you have classroom route
       };
 
       // Check for empty or null systems array
@@ -81,7 +81,7 @@ const HRLogin = () => {
 
       // Fallback to inquiry if nothing matched
       if (!systemPath) {
-        systemPath = "/wayabroadadmin/admin/inquiry";
+        systemPath = "/admin/fasthireadminlayout/inquiry";
       }
 
       navigate(systemPath);

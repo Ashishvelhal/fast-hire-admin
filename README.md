@@ -1,2 +1,0 @@
-# fast-hire-admin
-OG

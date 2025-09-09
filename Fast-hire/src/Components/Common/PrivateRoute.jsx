@@ -6,7 +6,7 @@ const PrivateRoute = ({ children }) => {
 
   if (!authToken) {
     // Redirect to login if not authenticated
-    return <Navigate to="/wayabroadadmin" />;
+    return <Navigate to="/admin" />;
   }
 
   // Render the protected route

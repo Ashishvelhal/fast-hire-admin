@@ -6,11 +6,11 @@ import { Box, Button, Stack, Paper } from "@mui/material";
 import LoadingOverlay from "../Common/LoadingOverlay"; // Make sure path is correct
 
 const navItems = [
-  { label: "Dashboard", to: "/wayabroadadmin/admin/abroadinquiry" },
-  { label: "Add inquiry", to: "/wayabroadadmin/admin/abroadinquiry/abroadinquiryForm" }, // ✅ FIXED
-  { label: "Inquiry List", to: "/wayabroadadmin/admin/abroadinquiry/abroadinquiryList" },
-  { label: "To Do List", to: "/wayabroadadmin/admin/abroadinquiry/abroadinquiryTodo" },
-  { label: "FeedBack", to: "/wayabroadadmin/admin/abroadinquiry/abroadinquiryFeedback" },
+  { label: "Dashboard", to: "/admin/fasthireadminlayout/abroadinquiry" },
+  { label: "Add inquiry", to: "/admin/fasthireadminlayout/abroadinquiry/abroadinquiryForm" }, // ✅ FIXED
+  { label: "Inquiry List", to: "/admin/fasthireadminlayout/abroadinquiry/abroadinquiryList" },
+  { label: "To Do List", to: "/admin/fasthireadminlayout/abroadinquiry/abroadinquiryTodo" },
+  { label: "FeedBack", to: "/admin/fasthireadminlayout/abroadinquiry/abroadinquiryFeedback" },
 ];
 
 
