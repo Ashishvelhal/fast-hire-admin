@@ -1,7 +1,7 @@
 import axios from "axios";
 import Swal from "sweetalert2";
 const axiosInstance = axios.create({
-    // baseURL: "https://pjsofttech.in:35443",
+    // baseURL: "https://pjsofttech.in:12443",
     baseURL: "http://localhost:8080", // your base URL
     // your base URL
 });

@@ -48,7 +48,7 @@ const App = () => {
 
             {/* Default redirects */}
             <Route path="/" element={<Navigate to="/admin" replace />} />
-            <Route path="*" element={<Navigate to="/admin" replace />} />
+            {/* <Route path="*" element={<Navigate to="/admin" replace />} /> */}
           </Routes>
         </ErrorBoundary>
       </Suspense>

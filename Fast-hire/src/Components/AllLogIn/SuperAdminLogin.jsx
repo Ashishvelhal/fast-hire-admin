@@ -17,7 +17,7 @@ import {
   MenuItem,
 } from "@mui/material";
 import { createSuperAdmin } from "../../services/superAdminService";
-import { loginSuperAdmin } from "../AllLogIn/LoginService"; 
+import { loginSuperAdmin } from "../AllLogIn/LoginService";
 import indianStatesAndDistricts from "../Common/indianStatesAndDistricts";
 
 const SuperAdminLogin = () => {
@@ -26,11 +26,12 @@ const SuperAdminLogin = () => {
   const [loading, setLoading] = useState(false);
   const [registerOpen, setRegisterOpen] = useState(false);
   const [registerLoading, setRegisterLoading] = useState(false);
+
   const [registerData, setRegisterData] = useState({
     adminName: "",
     email: "",
     mobileNumber: "",
-    Phone: "",
+    phone: "",
     password: "",
     address: "",
     city: "",
@@ -39,11 +40,12 @@ const SuperAdminLogin = () => {
     country: "",
     aadharNo: "",
     pancardNo: "",
-    gstNumber:"",
+    gstNumber: "",
     canCreate: true,
     canUpdate: true,
     canDelete: true,
     canRead: true,
+    role: "SUPERADMIN",
   });
 
   const navigate = useNavigate();
@@ -53,12 +55,11 @@ const SuperAdminLogin = () => {
       message.error("Please enter both email and password");
       return;
     }
-
     setLoading(true);
     try {
       const loginRequest = { email, password };
       const res = await loginSuperAdmin(loginRequest);
-      
+
       if (res && res.token) {
         sessionStorage.setItem("email", res.email || email);
         sessionStorage.setItem("role", "SUPERADMIN");
@@ -101,7 +102,7 @@ const SuperAdminLogin = () => {
           adminName: "",
           email: "",
           mobileNumber: "",
-          Phone: "",
+          phone: "",
           password: "",
           address: "",
           city: "",
@@ -110,11 +111,12 @@ const SuperAdminLogin = () => {
           country: "",
           aadharNo: "",
           pancardNo: "",
-          gstNumber:"",
+          gstNumber: "",
           canCreate: true,
           canUpdate: true,
           canDelete: true,
           canRead: true,
+          role: "SUPERADMIN",
         });
       } else {
         message.error(result.message || "Registration failed");
@@ -188,7 +190,7 @@ const SuperAdminLogin = () => {
               <TextField name="mobileNumber" required label="Mobile Number" value={registerData.mobileNumber} onChange={handleRegisterChange} fullWidth margin="normal" />
             </Grid>
             <Grid item xs={12} sm={3}>
-              <TextField name="Phone" label=" Phone" value={registerData.Phone} onChange={handleRegisterChange} fullWidth margin="normal" />
+              <TextField name="phone" label="Phone" value={registerData.phone} onChange={handleRegisterChange} fullWidth margin="normal" />
             </Grid>
             <Grid item xs={12} sm={3}>
               <TextField name="password" required label="Password" type="password" value={registerData.password} onChange={handleRegisterChange} fullWidth margin="normal" />
@@ -220,10 +222,10 @@ const SuperAdminLogin = () => {
               <TextField name="aadharNo" required label="Aadhar No" value={registerData.aadharNo} onChange={handleRegisterChange} fullWidth margin="normal" />
             </Grid>
             <Grid item xs={12} sm={3}>
-              <TextField name="pancardNo" required label="PanNo" value={registerData.pancardNo} onChange={handleRegisterChange} fullWidth margin="normal" />
+              <TextField name="pancardNo" required label="Pan No" value={registerData.pancardNo} onChange={handleRegisterChange} fullWidth margin="normal" />
             </Grid>
             <Grid item xs={12} sm={3}>
-              <TextField name="gstNumber" required label="gstNumber" value={registerData.gstNumber} onChange={handleRegisterChange} fullWidth margin="normal" />
+              <TextField name="gstNumber" required label="GST Number" value={registerData.gstNumber} onChange={handleRegisterChange} fullWidth margin="normal" />
             </Grid>
 
             {/* Permissions */}
