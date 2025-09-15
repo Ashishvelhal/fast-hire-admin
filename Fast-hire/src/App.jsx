@@ -28,13 +28,13 @@ const App = () => {
             {/* Admin Routes */}
             <Route path="/admin" element={<SidebarLoginContainer />} />
             <Route
-              path="/admin/dashboard"
+              path="/admin/fasthireadminlayout"
               element={
                 <PrivateRoute>
                   <Layout />
                 </PrivateRoute>
               }>
-              <Route index element={<MainDashboard />} />
+              <Route path="dashboard" element={<MainDashboard />} />
               <Route path="jobpost" element={<JobPost />} />
               <Route path="applicationform" element={<ApplicationForm />} />
               <Route path="jobrecord" element={<JobRecord />} />
