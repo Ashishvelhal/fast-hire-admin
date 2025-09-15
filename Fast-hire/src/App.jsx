@@ -40,15 +40,14 @@ const App = () => {
               <Route path="jobrecord" element={<JobRecord />} />
               <Route path="employe" element={<Employe />} />
               <Route path="settings" element={<Settings />} />
-              <Route path="*" element={<Navigate to="dashboard" replace />} />
+              {/* <Route path="*" element={<Navigate to="dashboard" replace />} /> */}
             </Route>
 
-            {/* Super Admin Routes */}
-            <Route path="/super-admin/*" element={<SuperAdminRoutes />} />
+    
+            {/* <Route path="/super-admin/*" element={<SuperAdminRoutes />} /> */}
 
-            {/* Default redirects */}
-            <Route path="/" element={<Navigate to="/admin" replace />} />
-            <Route path="*" element={<Navigate to="/admin" replace />} />
+            {/* <Route path="/" element={<Navigate to="/admin" replace />} />
+            <Route path="*" element={<Navigate to="/admin" replace />} /> */}
           </Routes>
         </ErrorBoundary>
       </Suspense>

@@ -1,7 +1,7 @@
 {
     "name": "fasthire",
     "private": true,
-    "homepage": "https://fasthire.in/admin",
+    "homepage": "https://fasthire.in/admin/",
     "version": "0.0.0",
     "type": "module",
     "scripts": {
