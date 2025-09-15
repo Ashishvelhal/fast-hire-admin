@@ -3,7 +3,7 @@ import axios from "axios";
 import axiosInstance from "../Utils/axiosConfig";
 
 const API_BASE_URL = "http://localhost:8080";
-// const API_BASE_URL = "https://wayabroad.in:10443"; // Uncomment for production
+// const API_BASE_URL = "https://fasthire.in:12443"; // Uncomment for production
 
 // Create axios instance with common settings
 const apiClient = axios.create({
@@ -15,7 +15,7 @@ const apiClient = axios.create({
 
 // Super Admin Login API
 export const loginSuperAdmin = async(loginRequest) => {
-    const response = await apiClient.post("/auth/superAdminLogin", loginRequest, {
+    const response = await apiClient.post("/superAdminLogin", loginRequest, {
         headers: {
             "Content-Type": "application/json",
         },

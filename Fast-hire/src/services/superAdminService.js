@@ -1,17 +1,27 @@
 import axiosInstance from "../Components/Utils/axiosConfig";
 
-export const createSuperAdmin = (adminData) => {
-    return axiosInstance.post("/superadmin/createSuperAdmin", adminData);
+export const createSuperAdmin = (adminData, profileImage) => {
+    const formData = new FormData();
+    formData.append("admin", JSON.stringify(adminData));
+    if (profileImage) {
+        formData.append("profileImage", profileImage);
+    }
+
+    return axiosInstance.post("/createSuperAdmin", formData, {
+        headers: {
+            "Content-Type": "multipart/form-data",
+        },
+    });
 };
 
 export const getAllSuperAdmins = () => {
-    return axiosInstance.get("/superadmin/getAllSuperAdmins");
+    return axiosInstance.get("/getAllSuperAdmins");
 };
 
 export const updateSuperAdmin = (id, adminData) => {
-    return axiosInstance.put(`/superadmin/updateSuperAdmin/${id}`, adminData);
+    return axiosInstance.put(`/updateSuperAdmin/${id}`, adminData);
 };
 
 export const deleteSuperAdmin = (id) => {
-    return axiosInstance.delete(`/superadmin/deleteSuperAdmin/${id}`);
+    return axiosInstance.delete(`/deleteSuperAdmin/${id}`);
 };
