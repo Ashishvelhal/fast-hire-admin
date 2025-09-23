@@ -12,8 +12,6 @@ import {
   DialogContent,
   DialogActions,
   Grid,
-  FormControlLabel,
-  Checkbox,
   MenuItem,
 } from "@mui/material";
 import { createSuperAdmin } from "../../services/superAdminService";
@@ -35,12 +33,14 @@ const SuperAdminLogin = () => {
     password: "",
     address: "",
     city: "",
-    state: "",
     district: "",
+    state: "",
     country: "",
+    pinCode: "",
     aadharNo: "",
     pancardNo: "",
     gstNumber: "",
+    profileImageUrl: "",
     canCreate: true,
     canUpdate: true,
     canDelete: true,
@@ -57,9 +57,7 @@ const SuperAdminLogin = () => {
     }
     setLoading(true);
     try {
-      const loginRequest = { email, password };
-      const res = await loginSuperAdmin(loginRequest);
-
+      const res = await loginSuperAdmin({ email, password });
       if (res && res.token) {
         sessionStorage.setItem("email", res.email || email);
         sessionStorage.setItem("role", "SUPERADMIN");
@@ -69,8 +67,8 @@ const SuperAdminLogin = () => {
       } else {
         message.error(res.message || "Invalid credentials");
       }
-    } catch (error) {
-      console.error("Login Error:", error);
+    } catch (err) {
+      console.error(err);
       message.error("Login failed. Please try again.");
     } finally {
       setLoading(false);
@@ -106,12 +104,14 @@ const SuperAdminLogin = () => {
           password: "",
           address: "",
           city: "",
-          state: "",
           district: "",
+          state: "",
           country: "",
+          pinCode: "",
           aadharNo: "",
           pancardNo: "",
           gstNumber: "",
+          profileImageUrl: "",
           canCreate: true,
           canUpdate: true,
           canDelete: true,
@@ -122,8 +122,8 @@ const SuperAdminLogin = () => {
         message.error(result.message || "Registration failed");
       }
     } catch (err) {
-      message.error("Registration failed");
       console.error(err);
+      message.error("Registration failed");
     } finally {
       setRegisterLoading(false);
     }
@@ -131,15 +131,15 @@ const SuperAdminLogin = () => {
 
   return (
     <>
-      <LoadingOverlay loading={loading || registerLoading} />
-      <div className="login-form">
-        <Typography.Title level={4} className="form-title">
-          Super Admin Access
-        </Typography.Title>
-        <p className="form-subtitle">Access the institute management portal</p>
+       <LoadingOverlay loading={loading || registerLoading} />
+       <div className="login-form">
+         <Typography.Title level={4} className="form-title">
+           Super Admin Access
+         </Typography.Title>
+         <p className="form-subtitle">Access the institute management portal</p>
 
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-          <Input
+         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+           <Input
             size="large"
             placeholder="Email"
             prefix={<MailOutlined className="input-icon" />}
@@ -174,83 +174,79 @@ const SuperAdminLogin = () => {
           </span>
         </div>
       </div>
-
       {/* Registration Dialog */}
       <Dialog open={registerOpen} onClose={() => setRegisterOpen(false)} maxWidth="lg" fullWidth>
         <DialogTitle>Super Admin Registration</DialogTitle>
         <DialogContent>
-          <Grid container spacing={2}>
+          <Grid container spacing={2} className="textField-root">
+            {/* Basic Info */}
             <Grid item xs={12} sm={3}>
-              <TextField name="adminName" required label="Name" value={registerData.adminName} onChange={handleRegisterChange} fullWidth margin="normal" />
+              <TextField name="adminName" label="Name" required value={registerData.adminName} onChange={handleRegisterChange} fullWidth />
             </Grid>
             <Grid item xs={12} sm={3}>
-              <TextField name="email" required label="Email" value={registerData.email} onChange={handleRegisterChange} fullWidth margin="normal" />
+              <TextField name="email" label="Email" required value={registerData.email} onChange={handleRegisterChange} fullWidth />
             </Grid>
             <Grid item xs={12} sm={3}>
-              <TextField name="mobileNumber" required label="Mobile Number" value={registerData.mobileNumber} onChange={handleRegisterChange} fullWidth margin="normal" />
+              <TextField name="mobileNumber" label="Mobile Number" required value={registerData.mobileNumber} onChange={handleRegisterChange} fullWidth />
             </Grid>
             <Grid item xs={12} sm={3}>
-              <TextField name="phone" label="Phone" value={registerData.phone} onChange={handleRegisterChange} fullWidth margin="normal" />
+              <TextField name="phone" label="Phone" value={registerData.phone} onChange={handleRegisterChange} fullWidth />
+            </Grid>
+
+            {/* Credentials */}
+            <Grid item xs={12} sm={3}>
+              <TextField name="password" label="Password" type="password" required value={registerData.password} onChange={handleRegisterChange} fullWidth />
+            </Grid>
+
+            {/* Address */}
+            <Grid item xs={12} sm={3}>
+              <TextField name="address" label="Address" required value={registerData.address} onChange={handleRegisterChange} fullWidth />
             </Grid>
             <Grid item xs={12} sm={3}>
-              <TextField name="password" required label="Password" type="password" value={registerData.password} onChange={handleRegisterChange} fullWidth margin="normal" />
+              <TextField name="city" label="City" required value={registerData.city} onChange={handleRegisterChange} fullWidth />
             </Grid>
             <Grid item xs={12} sm={3}>
-              <TextField name="address" required label="Address" value={registerData.address} onChange={handleRegisterChange} fullWidth margin="normal" />
-            </Grid>
-            <Grid item xs={12} sm={3}>
-              <TextField name="city" required label="City" value={registerData.city} onChange={handleRegisterChange} fullWidth margin="normal" />
-            </Grid>
-            <Grid item xs={12} sm={3}>
-              <TextField select name="state" required label="State" value={registerData.state} onChange={handleStateChange} fullWidth margin="normal">
+              <TextField select name="state" label="State" required value={registerData.state} onChange={handleStateChange} fullWidth>
                 {Object.keys(indianStatesAndDistricts).map((state) => (
                   <MenuItem key={state} value={state}>{state}</MenuItem>
                 ))}
               </TextField>
             </Grid>
             <Grid item xs={12} sm={3}>
-              <TextField select name="district" required label="District" value={registerData.district} onChange={handleRegisterChange} fullWidth margin="normal" disabled={!registerData.state}>
+              <TextField select name="district" label="District" required value={registerData.district} onChange={handleRegisterChange} fullWidth disabled={!registerData.state}>
                 {(indianStatesAndDistricts[registerData.state] || []).map((district) => (
                   <MenuItem key={district} value={district}>{district}</MenuItem>
                 ))}
               </TextField>
             </Grid>
             <Grid item xs={12} sm={3}>
-              <TextField name="country" required label="Country" value={registerData.country} onChange={handleRegisterChange} fullWidth margin="normal" />
+              <TextField name="country" label="Country" required value={registerData.country} onChange={handleRegisterChange} fullWidth />
             </Grid>
             <Grid item xs={12} sm={3}>
-              <TextField name="aadharNo" required label="Aadhar No" value={registerData.aadharNo} onChange={handleRegisterChange} fullWidth margin="normal" />
-            </Grid>
-            <Grid item xs={12} sm={3}>
-              <TextField name="pancardNo" required label="Pan No" value={registerData.pancardNo} onChange={handleRegisterChange} fullWidth margin="normal" />
-            </Grid>
-            <Grid item xs={12} sm={3}>
-              <TextField name="gstNumber" required label="GST Number" value={registerData.gstNumber} onChange={handleRegisterChange} fullWidth margin="normal" />
+              <TextField name="pinCode" label="Pin Code" required value={registerData.pinCode} onChange={handleRegisterChange} fullWidth />
             </Grid>
 
-            {/* Permissions */}
-            <Grid item xs={12}>
-              <Typography variant="subtitle1" sx={{ mt: 2, mb: 1 }}>Permissions</Typography>
-              <Grid container spacing={2}>
-                {["canCreate", "canUpdate", "canDelete", "canRead"].map((perm) => (
-                  <Grid item xs={12} sm={3} key={perm}>
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          checked={registerData[perm]}
-                          onChange={(e) => setRegisterData({ ...registerData, [perm]: e.target.checked })}
-                        />
-                      }
-                      label={perm.replace("can", "Can ")}
-                    />
-                  </Grid>
-                ))}
-              </Grid>
+            {/* Identity */}
+            <Grid item xs={12} sm={3}>
+              <TextField name="aadharNo" label="Aadhar No" required value={registerData.aadharNo} onChange={handleRegisterChange} fullWidth />
+            </Grid>
+            <Grid item xs={12} sm={3}>
+              <TextField name="pancardNo" label="PAN No" required value={registerData.pancardNo} onChange={handleRegisterChange} fullWidth />
+            </Grid>
+
+            {/* GST */}
+            <Grid item xs={12} sm={3}>
+              <TextField name="gstNumber" label="GST Number" value={registerData.gstNumber} onChange={handleRegisterChange} fullWidth />
+            </Grid>
+
+            {/* Profile Image URL */}
+            <Grid item xs={12} sm={3}>
+              <TextField name="profileImageUrl" label="Profile Image URL" value={registerData.profileImageUrl} onChange={handleRegisterChange} fullWidth />
             </Grid>
           </Grid>
         </DialogContent>
         <DialogActions>
-          <MuiButton onClick={() => setRegisterOpen(false)} disabled={registerLoading}>Cancel</MuiButton>
+          <MuiButton onClick={() => setRegisterOpen(false)}>Cancel</MuiButton>
           <MuiButton variant="contained" color="primary" onClick={handleRegister} disabled={registerLoading}>
             Register
           </MuiButton>

@@ -88,11 +88,11 @@ const JobPost = () => {
     <div className="job-post-container">
       <Card
         title="Job Posts"
-        extra={
-          <Button type="primary" icon={<PlusOutlined />} onClick={handleAddNew}>
-            Add New Job
-          </Button>
-        }
+        // extra={
+        //   <Button type="primary" icon={<PlusOutlined />} onClick={handleAddNew}>
+        //     Add New Job
+        //   </Button>
+        // }
       >
         <div className="job-post-filters">
           <Search

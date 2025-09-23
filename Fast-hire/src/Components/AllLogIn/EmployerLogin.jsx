@@ -8,7 +8,7 @@ import { loginEmployer } from "../AllLogIn/LoginService";
 import LoadingOverlay from "../Common/LoadingOverlay";
 
 const EmployerLogin = () => {
-  const [employerId, setEmployerId] = useState("");
+  // const [employerId, setEmployerId] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -58,14 +58,14 @@ const EmployerLogin = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
         >
-          <Input
+          {/* <Input
             size="large"
             placeholder="Employer ID"
             prefix={<UserOutlined className="input-icon" />}
             value={employerId}
             onChange={(e) => setEmployerId(e.target.value)}
             className="styled-input"
-          />
+          /> */}
         </motion.div>
         <motion.div
           initial={{ opacity: 0, y: 10 }}

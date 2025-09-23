@@ -11,7 +11,7 @@ export const NAVIGATION = [
       segment: "/admin/fasthireadminlayout/dashboard",
       icon: <DashboardIcon />,
       description: "View main dashboard",
-      roles: ["SUPERADMIN", "EMPLOYER"],
+      roles: ["SUPERADMIN", "MANAGER"],
     },
     {
       title: "Job Post",
@@ -19,7 +19,7 @@ export const NAVIGATION = [
       icon: <PersonSearchIcon />,
       description: "Manage inquiries",
       system: "Lead Management Software", 
-      roles: ["SUPERADMIN", "EMPLOYER"],
+      roles: ["SUPERADMIN", "MANAGER"],
     },
     {
       title: "Application Form",
@@ -27,7 +27,7 @@ export const NAVIGATION = [
       icon: <AddHomeIcon />,
       description: "Manage Application",
       system: "Application Management Software", 
-      roles: ["SUPERADMIN", "EMPLOYER"],
+      roles: ["SUPERADMIN", "MANAGER"],
     },
     {
       title: "Job Record",
@@ -35,7 +35,7 @@ export const NAVIGATION = [
       icon: <ReceiptLongIcon />,
       description: "Manage Registration",
       system: "Registration Management Software", 
-      roles: ["SUPERADMIN", "EMPLOYER"],
+      roles: ["SUPERADMIN", "MANAGER"],
     },
     // {
     //   title: "Contact Us",
@@ -46,8 +46,8 @@ export const NAVIGATION = [
     //   roles: ["superAdmin", "branch"],
     // },
     {
-      title: "Create Job Post",
-      segment: "/admin/fasthireadminlayout/createjobpost",
+      title: "Manager Form",
+      segment: "/admin/fasthireadminlayout/manager",
       icon: <WorkOutlineIcon />,
       description: "Marketing Management",
       system: "Marketing Management System",
@@ -90,6 +90,7 @@ export const NAVIGATION = [
     //   system: "Blog Management System",
     //   roles: ["superAdmin"],
     // },
+
     //  {
     //   title: "Course Finder",
     //   segment: "/admin/admin/CourceFinder ",
@@ -97,13 +98,7 @@ export const NAVIGATION = [
     //   description: "Course Finder",
     //   roles: ["superAdmin","branch","staff"],
     // },
-     {
-      title: "Employ Form",
-      segment: "/admin/fasthireadminlayout/employe",
-      icon: <ContactPageIcon />,
-      description: "Employe Form",
-      roles: ["SUPERADMIN"],
-    },
+    
     {
       title: "Settings",
       segment: "/admin/fasthireadminlayout/settings",

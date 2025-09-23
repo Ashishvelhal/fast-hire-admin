@@ -3,6 +3,7 @@ import axios from "axios";
 import axiosInstance from "../Utils/axiosConfig";
 
 const API_BASE_URL = "http://localhost:8080";
+
 // const API_BASE_URL = "https://fasthire.in:12443"; // Uncomment for production
 
 // Create axios instance with common settings
@@ -23,9 +24,9 @@ export const loginSuperAdmin = async(loginRequest) => {
     return response.data;
 };
 
-// Branch Login API
-export const loginBranch = async(loginRequest) => {
-    const response = await apiClient.post("/branchlogin", loginRequest, {
+// Manager Login API
+export const loginManager = async(loginRequest) => {
+    const response = await apiClient.post("/managerLogin", loginRequest, {
         headers: {
             "Content-Type": "application/json", // <-- Explicitly set JSON header
         },

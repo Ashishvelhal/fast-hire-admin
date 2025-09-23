@@ -39,10 +39,8 @@ const SuperAdminRoutes = () => {
         <Route path="profile" element={<LazyComponent component={Profile} />} />
         <Route path="*" element={<Navigate to="dashboard" replace />} />
       </Route>
-      
       <Route path="*" element={<Navigate to="login" replace />} />
     </Routes>
   );
 };
-
 export default SuperAdminRoutes;

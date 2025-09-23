@@ -3,8 +3,10 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { UserOutlined, BranchesOutlined, AppstoreOutlined, TeamOutlined } from "@ant-design/icons";
 import SuperAdminLogin from "./SuperAdminLogin";
-import EmployerLogin from "./EmployerLogin";
-import HRLogin from "./HRLogin";
+// import EmployerLogin from "./EmployerLogin";
+import ManagerLogin from "./ManagerLogin";
+
+// import HRLogin from "./HRLogin";
 import "./SidebarLogin.css";
 
 const SidebarLoginContainer = () => {
@@ -17,20 +19,28 @@ const SidebarLoginContainer = () => {
       component: <SuperAdminLogin />,
       color: "#2E86C1"
     },
-    {
-      key: "employer",
-      label: "Employer",
-      icon: <BranchesOutlined />,
-      component: <EmployerLogin />,
-      color: "#16A085"
+            {
+      key: "manager",
+      label: "Manager",
+      icon: <AppstoreOutlined />,
+      component: <ManagerLogin />,
+      color: "#16A025"
     },
-    {
-      key: "hr",
-      label: "HR",
-      icon: <TeamOutlined />,
-      component: <HRLogin />,
-      color: "#8E44AD"
-    },
+    // {
+    //   key: "employer",
+    //   label: "Employer",
+    //   icon: <BranchesOutlined />,
+    //   component: <EmployerLogin />,
+    //   color: "#16A085"
+    // },
+
+    // {
+    //   key: "hr",
+    //   label: "HR",
+    //   icon: <TeamOutlined />,
+    //   component: <HRLogin />,
+    //   color: "#8E44AD"
+    // },
     // {
     //   key: "department",
     //   label: "Department",
