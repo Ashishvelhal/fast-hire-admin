@@ -174,12 +174,10 @@ const SuperAdminLogin = () => {
           </span>
         </div>
       </div>
-      {/* Registration Dialog */}
       <Dialog open={registerOpen} onClose={() => setRegisterOpen(false)} maxWidth="lg" fullWidth>
         <DialogTitle>Super Admin Registration</DialogTitle>
         <DialogContent>
           <Grid container spacing={2} className="textField-root">
-            {/* Basic Info */}
             <Grid item xs={12} sm={3}>
               <TextField name="adminName" label="Name" required value={registerData.adminName} onChange={handleRegisterChange} fullWidth />
             </Grid>
@@ -192,13 +190,9 @@ const SuperAdminLogin = () => {
             <Grid item xs={12} sm={3}>
               <TextField name="phone" label="Phone" value={registerData.phone} onChange={handleRegisterChange} fullWidth />
             </Grid>
-
-            {/* Credentials */}
             <Grid item xs={12} sm={3}>
               <TextField name="password" label="Password" type="password" required value={registerData.password} onChange={handleRegisterChange} fullWidth />
             </Grid>
-
-            {/* Address */}
             <Grid item xs={12} sm={3}>
               <TextField name="address" label="Address" required value={registerData.address} onChange={handleRegisterChange} fullWidth />
             </Grid>
@@ -225,21 +219,15 @@ const SuperAdminLogin = () => {
             <Grid item xs={12} sm={3}>
               <TextField name="pinCode" label="Pin Code" required value={registerData.pinCode} onChange={handleRegisterChange} fullWidth />
             </Grid>
-
-            {/* Identity */}
             <Grid item xs={12} sm={3}>
               <TextField name="aadharNo" label="Aadhar No" required value={registerData.aadharNo} onChange={handleRegisterChange} fullWidth />
             </Grid>
             <Grid item xs={12} sm={3}>
               <TextField name="pancardNo" label="PAN No" required value={registerData.pancardNo} onChange={handleRegisterChange} fullWidth />
             </Grid>
-
-            {/* GST */}
             <Grid item xs={12} sm={3}>
               <TextField name="gstNumber" label="GST Number" value={registerData.gstNumber} onChange={handleRegisterChange} fullWidth />
             </Grid>
-
-            {/* Profile Image URL */}
             <Grid item xs={12} sm={3}>
               <TextField name="profileImageUrl" label="Profile Image URL" value={registerData.profileImageUrl} onChange={handleRegisterChange} fullWidth />
             </Grid>

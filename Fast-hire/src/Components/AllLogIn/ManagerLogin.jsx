@@ -47,7 +47,6 @@ const handleLogin = async () => {
           Manager Portal
         </Typography.Title>
         <p className="form-subtitle">Access your manager account</p>
-
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
           <Input
             size="large"
@@ -58,7 +57,6 @@ const handleLogin = async () => {
             className="styled-input"
           />
         </motion.div>
-
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
           <Input.Password
             size="large"
@@ -70,13 +68,11 @@ const handleLogin = async () => {
             onPressEnter={handleLogin}
           />
         </motion.div>
-
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
           <Button type="primary" onClick={handleLogin} className="login-button" size="large">
             Sign In
           </Button>
         </motion.div>
-
         <div className="login-footer">
           <a href="#forgot" className="forgot-link">
             Forgot Password?
@@ -86,5 +82,4 @@ const handleLogin = async () => {
     </>
   );
 };
-
 export default ManagerLogin;

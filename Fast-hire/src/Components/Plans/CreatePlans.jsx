@@ -1,0 +1,312 @@
+import React, { useState, useEffect } from "react";
+import {
+  Grid,
+  TextField,
+  MenuItem,
+  Button,
+  Box,
+  Chip,
+  Stack,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+} from "@mui/material";
+import { Table, Tag } from "antd";
+import Swal from "sweetalert2";
+import { createPlan, getAllPlans, updatePlan } from "./CreatePlans";
+
+const statusOptions = [
+  { value: true, label: "Active" },
+  { value: false, label: "Inactive" },
+];
+
+const initialForm = {
+  name: "",
+  durationInMonths: "",
+  jobPostLimit: "",
+  price: "",
+  featuresInput: "",
+  features: [], // keep as empty array, do not create a feature if API returns empty
+  discountPercentage: "",
+  isActive: true,
+  planType: "MONTHLY",
+};
+
+function CreatePlan() {
+  const [formData, setFormData] = useState(initialForm);
+  const [loading, setLoading] = useState(false);
+  const [plans, setPlans] = useState([]);
+  const [open, setOpen] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  const [selectedPlanId, setSelectedPlanId] = useState(null);
+
+  const authToken = sessionStorage.getItem("authToken");
+  const superAdminEmail = sessionStorage.getItem("email");
+
+  const fetchPlans = async () => {
+    try {
+      const res = await getAllPlans(authToken);
+      if (res?.data) {
+        const formatted = res.data.map((p) => ({
+          ...p,
+          key: p.id,
+          features: Array.isArray(p.features) ? p.features : [], // ensure features is always an array, but do not create any feature
+        }));
+        setPlans(formatted);
+      }
+    } catch (error) {
+      console.error("Error fetching plans:", error);
+      Swal.fire("Error", "Failed to load plans.", "error");
+    }
+  };
+
+  useEffect(() => {
+    if (authToken) fetchPlans();
+  }, [authToken]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    if (name === "isActive") {
+      setFormData({ ...formData, [name]: value === "true" });
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
+  };
+
+  const addFeature = () => {
+    const v = formData.featuresInput?.trim();
+    if (v && !formData.features.includes(v)) {
+      setFormData((prev) => ({
+        ...prev,
+        features: [...prev.features, v],
+        featuresInput: "",
+      }));
+    }
+  };
+
+  const removeFeature = (f) => {
+    setFormData((prev) => ({
+      ...prev,
+      features: prev.features.filter((x) => x !== f),
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!authToken || !superAdminEmail) {
+      Swal.fire("Error", "SuperAdmin not logged in. Please login first.", "error");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const payload = {
+        name: formData.name,
+        durationInMonths: formData.durationInMonths ? Number(formData.durationInMonths) : null,
+        jobPostLimit: formData.jobPostLimit ? Number(formData.jobPostLimit) : null,
+        price: formData.price ? Number(formData.price) : null,
+        features: formData.features,
+        discountPercentage: formData.discountPercentage ? Number(formData.discountPercentage) : null,
+        isActive: formData.isActive,
+        planType: formData.planType,
+        createdByEmail: superAdminEmail,
+      };
+
+      if (editMode && selectedPlanId) {
+        await updatePlan(selectedPlanId, payload, authToken);
+        Swal.fire("Updated!", "Plan updated successfully!", "success");
+      } else {
+        await createPlan(payload, authToken);
+        Swal.fire("Created!", "Plan created successfully!", "success");
+      }
+
+      fetchPlans();
+      setFormData(initialForm);
+      setOpen(false);
+      setEditMode(false);
+      setSelectedPlanId(null);
+    } catch (error) {
+      console.error("Error saving plan:", error);
+      Swal.fire("Error", "Failed to save plan. Please try again.", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleEdit = (record) => {
+    setFormData({
+      ...record,
+      features: Array.isArray(record.features) ? record.features : [], // ensure features is always an array
+      featuresInput: "",
+    });
+    setSelectedPlanId(record.id);
+    setEditMode(true);
+    setOpen(true);
+  };
+
+  const columns = [
+    {
+      title: "Sr.No",
+      key: "index",
+      render: (text, record, index) => index + 1,
+      width: 70,
+    },
+    {
+      title: "Plan Name",
+      dataIndex: "name",
+      key: "name",
+      render: (text, record) => (
+        <Button variant="text" color="primary" onClick={() => handleEdit(record)}>
+          {text}
+        </Button>
+      ),
+    },
+    {
+      title: "Duration",
+      dataIndex: "durationInMonths",
+      key: "durationInMonths",
+      render: (v) => (v ? `${v} months` : "-"),
+    },
+    {
+      title: "Job Limit",
+      dataIndex: "jobPostLimit",
+      key: "jobPostLimit",
+      render: (v) => (v ? v : "Unlimited"),
+    },
+    {
+      title: "Price",
+      dataIndex: "price",
+      key: "price",
+      render: (v) => (v !== null && v !== undefined ? `₹${v.toLocaleString()}` : "Free"),
+    },
+    {
+      title: "Discount",
+      dataIndex: "discountPercentage",
+      key: "discountPercentage",
+      render: (v) => (v ? `${v}%` : "0%"),
+    },
+    {
+      title: "Features",
+      dataIndex: "features",
+      key: "features",
+      render: (list) =>
+        Array.isArray(list) && list.length > 0 ? (
+          list.map((f) => (
+            <Tag color="blue" key={f} style={{ marginBottom: 4 }}>
+              {f}
+            </Tag>
+          ))
+        ) : (
+          <span>-</span>
+        ),
+    },
+    {
+      title: "Status",
+      dataIndex: "isActive",
+      key: "isActive",
+      render: (v) => <Tag color={v ? "green" : "red"}>{v ? "Active" : "Inactive"}</Tag>,
+    },
+    {
+      title: "Created At",
+      dataIndex: "createdAt",
+      key: "createdAt",
+      render: (v) => (v ? new Date(v).toLocaleDateString() : "-"),
+    },
+  ];
+
+  return (
+    <Box p={3}>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={() => {
+          setFormData(initialForm);
+          setEditMode(false);
+          setOpen(true);
+        }}
+        sx={{ mb: 2 }}
+      >
+        Create Plan
+      </Button>
+
+      <Table columns={columns} dataSource={plans} bordered pagination={{ pageSize: 5 }} />
+
+      <Dialog open={open} onClose={() => setOpen(false)} maxWidth="md">
+        <DialogTitle>{editMode ? "Edit Plan" : "Create Plan"}</DialogTitle>
+        <DialogContent dividers>
+          <form onSubmit={handleSubmit}>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6} md={4}>
+                <TextField label="Plan Name" name="name" fullWidth required value={formData.name} onChange={handleChange} />
+              </Grid>
+              <Grid item xs={12} sm={6} md={4}>
+                <TextField label="Duration (months)" name="durationInMonths" type="number" fullWidth value={formData.durationInMonths} onChange={handleChange} />
+              </Grid>
+              <Grid item xs={12} sm={6} md={4}>
+                <TextField label="Job Post Limit" name="jobPostLimit" type="number" fullWidth value={formData.jobPostLimit} onChange={handleChange} />
+              </Grid>
+              <Grid item xs={12} sm={6} md={4}>
+                <TextField label="Price" name="price" type="number" fullWidth value={formData.price} onChange={handleChange} />
+              </Grid>
+              <Grid item xs={12} sm={6} md={4}>
+                <TextField label="Discount (%)" name="discountPercentage" type="number" fullWidth value={formData.discountPercentage} onChange={handleChange} />
+              </Grid>
+
+              <Grid item xs={12} sm={8}>
+                <TextField
+                  label="Add Feature"
+                  name="featuresInput"
+                  fullWidth
+                  value={formData.featuresInput || ""}
+                  onChange={handleChange}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      addFeature();
+                    }
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap" }}>
+                  {formData.features.map((f) => (
+                    <Chip key={f} label={f} onDelete={() => removeFeature(f)} sx={{ m: 0.5 }} />
+                  ))}
+                </Stack>
+              </Grid>
+
+              <Grid item xs={12} sm={6} md={4}>
+                <TextField select label="Status" name="isActive" fullWidth value={formData.isActive} onChange={handleChange}>
+                  {statusOptions.map((opt) => (
+                    <MenuItem key={opt.value} value={opt.value.toString()}>
+                      {opt.label}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              </Grid>
+            </Grid>
+
+            <DialogActions sx={{ mt: 2 }}>
+              <Button
+                onClick={() => {
+                  setOpen(false);
+                  setEditMode(false);
+                  setFormData(initialForm);
+                }}
+                color="secondary"
+              >
+                Cancel
+              </Button>
+              <Button type="submit" variant="contained" color="primary" disabled={loading}>
+                {loading ? (editMode ? "Updating..." : "Creating...") : editMode ? "Update" : "Submit"}
+              </Button>
+            </DialogActions>
+          </form>
+        </DialogContent>
+      </Dialog>
+    </Box>
+  );
+}
+
+export default CreatePlan;

@@ -4,7 +4,7 @@ import axiosInstance from "../Utils/axiosConfig";
 
 const API_BASE_URL = "http://localhost:8080";
 
-// const API_BASE_URL = "https://fasthire.in:12443"; // Uncomment for production
+// const API_BASE_URL = "https://fasthire.in:12443"; 
 
 // Create axios instance with common settings
 const apiClient = axios.create({
@@ -28,7 +28,7 @@ export const loginSuperAdmin = async(loginRequest) => {
 export const loginManager = async(loginRequest) => {
     const response = await apiClient.post("/managerLogin", loginRequest, {
         headers: {
-            "Content-Type": "application/json", // <-- Explicitly set JSON header
+            "Content-Type": "application/json", 
         },
     });
     return response.data;
@@ -38,15 +38,15 @@ export const loginManager = async(loginRequest) => {
 export const loginDepartment = async(loginRequest) => {
     const response = await apiClient.post("/departmentlogin", loginRequest, {
         headers: {
-            "Content-Type": "application/json", // Set Content-Type to JSON
+            "Content-Type": "application/json",
         },
     });
     return response.data;
 };
 
-// Employer Login API
-export const loginEmployer = async(loginRequest) => {
-    const response = await apiClient.post("/loginEmployer", loginRequest, {
+// employe Login API
+export const loginemploye = async(loginRequest) => {
+    const response = await apiClient.post("/loginemployer", loginRequest, {
         headers: {
             "Content-Type": "application/json",
         },
@@ -67,7 +67,7 @@ export const loginHR = async(loginRequest) => {
 export const loginStaff = async(loginRequest) => {
     const response = await apiClient.post("/stafflogin", loginRequest, {
         headers: {
-            "Content-Type": "application/json", // Set Content-Type to JSON
+            "Content-Type": "application/json", 
         },
     });
     return response.data;
@@ -90,7 +90,6 @@ export const registerSuperAdmin = async(data) => {
 };
 
 // Get Branch Code-Name Mapping
-
 export const getBranchCodeNameMap = async() => {
     try {
         const response = await axiosInstance.get("/getBranchCodeNameMap");

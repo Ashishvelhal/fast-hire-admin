@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { UserOutlined, BranchesOutlined, AppstoreOutlined, TeamOutlined } from "@ant-design/icons";
 import SuperAdminLogin from "./SuperAdminLogin";
-// import EmployerLogin from "./EmployerLogin";
+// import employeLogin from "./employeLogin";
 import ManagerLogin from "./ManagerLogin";
 
 // import HRLogin from "./HRLogin";
@@ -27,10 +27,10 @@ const SidebarLoginContainer = () => {
       color: "#16A025"
     },
     // {
-    //   key: "employer",
-    //   label: "Employer",
+    //   key: "employe",
+    //   label: "employe",
     //   icon: <BranchesOutlined />,
-    //   component: <EmployerLogin />,
+    //   component: <employeLogin />,
     //   color: "#16A085"
     // },
 

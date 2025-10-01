@@ -8,21 +8,23 @@ import {
   TextField,
   MenuItem,
   Button as MuiButton,
-  FormControlLabel,
   Button,
-  Checkbox,
   Typography,
 } from "@mui/material";
 import { message } from "antd";
-import { createEmployer } from "../Employe/Employe"; 
+import { createemploye } from "./CreateEmploye"; 
 import indianStatesAndDistricts from "../Common/indianStatesAndDistricts";
 import LoadingOverlay from "../Common/LoadingOverlay";
+import "../Common/Design.css";
 
-const Employe = () => {
+const CreateEmploye = () => {
   const [registerOpen, setRegisterOpen] = useState(false);
   const [registerLoading, setRegisterLoading] = useState(false);
+  const [profilePhoto, setProfilePhoto] = useState(null);
+
   const [registerData, setRegisterData] = useState({
     companyName: "",
+    companyType: "",
     contactPerson: "",
     email: "",
     password: "",
@@ -40,16 +42,12 @@ const Employe = () => {
     state: "",
     country: "",
     pinCode: "",
+    profilePhotoUrl: "",
     registrationNumber: "",
     gstNumber: "",
-    documentsVerified: true,
-    canCreate: true,
-    canUpdate: true,
-    canDelete: true,
-    canRead: true,
-    jobPostLimit: 10,
-    remainingPosts: 10,
+    documentsVerified: false,
   });
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setRegisterData({ ...registerData, [name]: value });
@@ -59,9 +57,13 @@ const Employe = () => {
     setRegisterData({ ...registerData, state: e.target.value, district: "" });
   };
 
-  const handleCheckboxChange = (e) => {
-    const { name, checked } = e.target;
-    setRegisterData({ ...registerData, [name]: checked });
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setProfilePhoto(file);
+      const fileUrl = URL.createObjectURL(file);
+      setRegisterData({ ...registerData, profilePhotoUrl: fileUrl });
+    }
   };
 
   const handleRegister = async () => {
@@ -73,19 +75,32 @@ const Employe = () => {
 
     setRegisterLoading(true);
     try {
-      const response = await createEmployer(registerData);
+      const token = sessionStorage.getItem("token");
+      const role = sessionStorage.getItem("role");
+      const createdByEmail = sessionStorage.getItem("email");
 
-      const { token, role, email: registeredEmail } = response.data;
+      const response = await createemploye(
+        registerData,
+        profilePhoto,
+        token,
+        createdByEmail,
+        role
+      );
 
-      if (token) sessionStorage.setItem("token", token);
-      if (role) sessionStorage.setItem("role", role);
+      const { token: newToken, role: newRole, email: registeredEmail } =
+        response.data;
+
+      if (newToken) sessionStorage.setItem("token", newToken);
+      if (newRole) sessionStorage.setItem("role", newRole);
       if (registeredEmail) sessionStorage.setItem("email", registeredEmail);
 
-      message.success("Employer registered successfully");
+      message.success("Employee registered successfully");
       setRegisterOpen(false);
 
+      // reset
       setRegisterData({
         companyName: "",
+        companyType: "",
         contactPerson: "",
         email: "",
         password: "",
@@ -103,19 +118,15 @@ const Employe = () => {
         state: "",
         country: "",
         pinCode: "",
+        profilePhotoUrl: "",
         registrationNumber: "",
         gstNumber: "",
         documentsVerified: false,
-        canCreate: true,
-        canUpdate: true,
-        canDelete: true,
-        canRead: true,
-        jobPostLimit: 10,
-        remainingPosts: 10,
       });
+      setProfilePhoto(null);
     } catch (err) {
       console.error(err);
-      message.error("Failed to register employer");
+      message.error("Failed to register employee");
     } finally {
       setRegisterLoading(false);
     }
@@ -129,20 +140,18 @@ const Employe = () => {
         color="primary"
         onClick={() => setRegisterOpen(true)}
       >
-        Register Employer
+        Register Employee
       </Button>
-
       <Dialog
         open={registerOpen}
         onClose={() => setRegisterOpen(false)}
         maxWidth="lg"
         fullWidth
       >
-        <DialogTitle>Employer Registration</DialogTitle>
+        <DialogTitle>Employee Registration</DialogTitle>
         <DialogContent>
-          <Grid container spacing={2}>
-            {/* Basic Info */}
-            <Grid item xs={12} sm={4}>
+          <Grid container spacing={2} className="textField-root">
+            <Grid item xs={12} sm={3}>
               <TextField
                 name="companyName"
                 required
@@ -150,10 +159,9 @@ const Employe = () => {
                 value={registerData.companyName}
                 onChange={handleChange}
                 fullWidth
-                margin="normal"
               />
             </Grid>
-            <Grid item xs={12} sm={4}>
+            <Grid item xs={12} sm={3}>
               <TextField
                 name="contactPerson"
                 required
@@ -161,10 +169,9 @@ const Employe = () => {
                 value={registerData.contactPerson}
                 onChange={handleChange}
                 fullWidth
-                margin="normal"
               />
             </Grid>
-            <Grid item xs={12} sm={4}>
+            <Grid item xs={12} sm={3}>
               <TextField
                 name="email"
                 required
@@ -173,10 +180,9 @@ const Employe = () => {
                 value={registerData.email}
                 onChange={handleChange}
                 fullWidth
-                margin="normal"
               />
             </Grid>
-            <Grid item xs={12} sm={4}>
+            <Grid item xs={12} sm={3}>
               <TextField
                 name="password"
                 required
@@ -185,50 +191,45 @@ const Employe = () => {
                 value={registerData.password}
                 onChange={handleChange}
                 fullWidth
-                margin="normal"
               />
             </Grid>
-
-            {/* Company Details */}
-            <Grid item xs={12} sm={4}>
+            <Grid item xs={12} sm={3}>
               <TextField
                 name="companyWebsite"
                 label="Company Website"
                 value={registerData.companyWebsite}
                 onChange={handleChange}
                 fullWidth
-                margin="normal"
               />
             </Grid>
-            <Grid item xs={12} sm={4}>
+            <Grid item xs={12} sm={3}>
               <TextField
                 name="companyLogoUrl"
                 label="Company Logo URL"
                 value={registerData.companyLogoUrl}
                 onChange={handleChange}
                 fullWidth
-                margin="normal"
               />
             </Grid>
-            <Grid item xs={12} sm={4}>
+            <Grid item xs={12} sm={3}>
               <TextField
                 name="industry"
+                required
                 label="Industry"
                 value={registerData.industry}
                 onChange={handleChange}
                 fullWidth
-                margin="normal"
               />
             </Grid>
-            <Grid item xs={12} sm={4}>
+            <Grid item xs={12} sm={3}>
               <TextField
                 select
                 name="companySize"
+                required
                 label="Company Size"
                 value={registerData.companySize}
                 onChange={handleChange}
                 fullWidth
-                margin="normal"
               >
                 <MenuItem value="1-10">1-10 employees</MenuItem>
                 <MenuItem value="11-50">11-50 employees</MenuItem>
@@ -236,17 +237,17 @@ const Employe = () => {
                 <MenuItem value="200+">200+ employees</MenuItem>
               </TextField>
             </Grid>
-            <Grid item xs={12} sm={4}>
+            <Grid item xs={12} sm={3}>
               <TextField
                 name="foundedYear"
+                required
                 label="Founded Year"
                 value={registerData.foundedYear}
                 onChange={handleChange}
                 fullWidth
-                margin="normal"
               />
             </Grid>
-            <Grid item xs={12} sm={4}>
+            <Grid item xs={12} sm={9}>
               <TextField
                 name="aboutCompany"
                 label="About Company"
@@ -255,19 +256,16 @@ const Employe = () => {
                 fullWidth
                 multiline
                 rows={2}
-                margin="normal"
               />
             </Grid>
-
-            {/* Contact Info */}
             <Grid item xs={12} sm={3}>
               <TextField
                 name="phoneNumber"
+                required
                 label="Phone Number"
                 value={registerData.phoneNumber}
                 onChange={handleChange}
                 fullWidth
-                margin="normal"
               />
             </Grid>
             <Grid item xs={12} sm={3}>
@@ -277,7 +275,6 @@ const Employe = () => {
                 value={registerData.alternatePhone}
                 onChange={handleChange}
                 fullWidth
-                margin="normal"
               />
             </Grid>
             <Grid item xs={12} sm={3}>
@@ -287,22 +284,20 @@ const Employe = () => {
                 value={registerData.address}
                 onChange={handleChange}
                 fullWidth
-                margin="normal"
                 multiline
                 rows={2}
               />
             </Grid>
-            <Grid item xs={12} sm={2}>
+            <Grid item xs={12} sm={3}>
               <TextField
                 name="city"
                 label="City"
                 value={registerData.city}
                 onChange={handleChange}
                 fullWidth
-                margin="normal"
               />
             </Grid>
-            <Grid item xs={12} sm={2}>
+            <Grid item xs={12} sm={3}>
               <TextField
                 select
                 name="state"
@@ -310,7 +305,6 @@ const Employe = () => {
                 value={registerData.state}
                 onChange={handleStateChange}
                 fullWidth
-                margin="normal"
               >
                 {Object.keys(indianStatesAndDistricts).map((state) => (
                   <MenuItem key={state} value={state}>
@@ -319,7 +313,7 @@ const Employe = () => {
                 ))}
               </TextField>
             </Grid>
-            <Grid item xs={12} sm={2}>
+            <Grid item xs={12} sm={3}>
               <TextField
                 select
                 name="district"
@@ -327,7 +321,6 @@ const Employe = () => {
                 value={registerData.district}
                 onChange={handleChange}
                 fullWidth
-                margin="normal"
                 disabled={!registerData.state}
               >
                 {(indianStatesAndDistricts[registerData.state] || []).map(
@@ -339,84 +332,78 @@ const Employe = () => {
                 )}
               </TextField>
             </Grid>
-            <Grid item xs={12} sm={2}>
+            <Grid item xs={12} sm={3}>
               <TextField
                 name="country"
                 label="Country"
                 value={registerData.country}
                 onChange={handleChange}
                 fullWidth
-                margin="normal"
               />
             </Grid>
-            <Grid item xs={12} sm={2}>
+            <Grid item xs={12} sm={3}>
               <TextField
                 name="pinCode"
                 label="Pin Code"
                 value={registerData.pinCode}
                 onChange={handleChange}
                 fullWidth
-                margin="normal"
               />
             </Grid>
-
-            {/* Compliance */}
+            <Grid item xs={12} sm={3}>
+              <TextField
+                select
+                name="companyType"
+                required
+                label="Company Type"
+                value={registerData.companyType}
+                onChange={handleChange}
+                fullWidth
+              >
+                <MenuItem value="Private Ltd">Private Ltd</MenuItem>
+                <MenuItem value="Proprietorship">Proprietorship</MenuItem>
+                <MenuItem value="LLP">LLP</MenuItem>
+                <MenuItem value="Government">Government</MenuItem>
+                <MenuItem value="Semi-Government">Semi-Government</MenuItem>
+                <MenuItem value="Partnership">Partnership</MenuItem>
+                <MenuItem value="Public Ltd">Public Ltd</MenuItem>
+              </TextField>
+            </Grid>
             <Grid item xs={12} sm={3}>
               <TextField
                 name="registrationNumber"
-                label="Registration Number"
+                required
+                label="Reg.No/CIN/Shop No"
                 value={registerData.registrationNumber}
                 onChange={handleChange}
                 fullWidth
-                margin="normal"
               />
             </Grid>
             <Grid item xs={12} sm={3}>
               <TextField
                 name="gstNumber"
+                required
                 label="GST Number"
                 value={registerData.gstNumber}
                 onChange={handleChange}
                 fullWidth
-                margin="normal"
               />
             </Grid>
             <Grid item xs={12} sm={3}>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    name="documentsVerified"
-                    checked={registerData.documentsVerified}
-                    onChange={handleCheckboxChange}
-                  />
-                }
-                label="Documents Verified"
-              />
-            </Grid>
-
-            {/* Permissions */}
-            <Grid item xs={12}>
-              <Typography variant="subtitle1" sx={{ mt: 2, mb: 1 }}>
-                Permissions
-              </Typography>
-              <Grid container spacing={2}>
-                {["canCreate", "canUpdate", "canDelete", "canRead"].map(
-                  (perm) => (
-                    <Grid item xs={12} sm={3} key={perm}>
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            checked={registerData[perm]}
-                            onChange={handleCheckboxChange}
-                            name={perm}
-                          />
-                        }
-                        label={perm.replace("can", "Can ")}
-                      />
-                    </Grid>
-                  )
-                )}
-              </Grid>
+              <Button variant="outlined" component="label" fullWidth>
+                Upload Profile Photo
+                <input
+                  type="file"
+                  hidden
+                  accept="image/*"
+                  onChange={handleFileChange}
+                />
+              </Button>
+              {profilePhoto && (
+                <Typography variant="caption" display="block">
+                  {profilePhoto.name}
+                </Typography>
+              )}
             </Grid>
           </Grid>
         </DialogContent>
@@ -441,4 +428,4 @@ const Employe = () => {
   );
 };
 
-export default Employe;
+export default CreateEmploye;

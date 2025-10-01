@@ -6,15 +6,12 @@ import { Box, Button, Stack, Paper } from "@mui/material";
 import LoadingOverlay from "../Common/LoadingOverlay"; // Make sure path is correct
 
 const navItems = [
-  { label: "Dashboard", to: "/admin/fasthireadminlayout/abroadinquiry" },
-  { label: "Add inquiry", to: "/admin/fasthireadminlayout/abroadinquiry/abroadinquiryForm" }, // ✅ FIXED
-  { label: "Inquiry List", to: "/admin/fasthireadminlayout/abroadinquiry/abroadinquiryList" },
-  { label: "To Do List", to: "/admin/fasthireadminlayout/abroadinquiry/abroadinquiryTodo" },
-  { label: "FeedBack", to: "/admin/fasthireadminlayout/abroadinquiry/abroadinquiryFeedback" },
+  { label: "Create Plans", to: "/admin/fasthireadminlayout/plans" },
+  { label: "View Plans", to: "/admin/fasthireadminlayout/viewplans" }
 ];
 
 
-const InquirySidebar = () => {
+const MiniSidebar = () => {
   const location = useLocation();
   const [loading, setLoading] = useState(false);
 
@@ -27,10 +24,8 @@ const InquirySidebar = () => {
       role === "superAdmin" &&
       (
 
-        item.label === "Add inquiry" ||
-        item.label === "To Do List" ||
-        item.label === "FeedBack" ||
-        item.label === "Lead Settings"
+        item.label === "Create Plans" ||
+        item.label === "View Plans"
       )
     ) {
       return false;
@@ -108,4 +103,4 @@ const InquirySidebar = () => {
   );
 };
 
-export default InquirySidebar;
+export default MiniSidebar;

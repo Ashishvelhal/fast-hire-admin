@@ -14,11 +14,11 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { Table, message, Spin } from "antd";
-import { createManager, getAllManagers } from "./AddManager";
+import { createManager, getAllManagers } from "./CreateManager";
 import indianStatesAndDistricts from "../Common/indianStatesAndDistricts";
 import "../Common/Design.css";
 
-const ManagerLogin = () => {
+const CreateManager = () => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [tableLoading, setTableLoading] = useState(false);
@@ -44,8 +44,6 @@ const ManagerLogin = () => {
     status: "ACTIVE",
     gender: "",
   });
-
-  // fetch managers
   const fetchManagers = async () => {
     const authToken = sessionStorage.getItem("authToken");
     if (!authToken) {
@@ -54,7 +52,7 @@ const ManagerLogin = () => {
     }
     try {
       setTableLoading(true);
-      const response = await getAllManagers(authToken); // ⬅️ your API
+      const response = await getAllManagers(authToken); 
       setManagers(response.data || []);
     } catch (error) {
       console.error("Error fetching managers:", error);
@@ -80,20 +78,17 @@ const ManagerLogin = () => {
     setSelectedState(state);
     setFormData({ ...formData, state, district: "" });
   };
-
   const handleFileChange = (e) => {
     if (e.target.files && e.target.files[0]) {
       setProfilePhoto(e.target.files[0]);
     }
   };
-
   const handleSubmit = async () => {
     const authToken = sessionStorage.getItem("authToken");
     if (!authToken) {
       alert("SuperAdmin not logged in. Please login first.");
       return;
     }
-
     try {
       setLoading(true);
       const formDataObj = new FormData();
@@ -102,7 +97,7 @@ const ManagerLogin = () => {
 
       await createManager(formDataObj, authToken);
       alert("Manager created successfully!");
-      fetchManagers(); // refresh table
+      fetchManagers();
 
       setFormData({
         name: "",
@@ -134,6 +129,12 @@ const ManagerLogin = () => {
   };
 
   const columns = [
+        {
+      title: "Sr.No",
+      key: "index",
+      render: (text, record, index) => index + 1,
+      width: 70,
+    },
     { title: "Name", dataIndex: "name", key: "name" },
     { title: "Email", dataIndex: "email", key: "email" },
     { title: "Mobile", dataIndex: "mobileNumber", key: "mobileNumber" },
@@ -390,4 +391,4 @@ const ManagerLogin = () => {
   );
 };
 
-export default ManagerLogin;
+export default CreateManager;
