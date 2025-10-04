@@ -27,7 +27,7 @@ const initialForm = {
   jobPostLimit: "",
   price: "",
   featuresInput: "",
-  features: [], // keep as empty array, do not create a feature if API returns empty
+  features: [],
   discountPercentage: "",
   isActive: true,
   planType: "MONTHLY",
@@ -42,19 +42,22 @@ function CreatePlan() {
   const [selectedPlanId, setSelectedPlanId] = useState(null);
 
   const authToken = sessionStorage.getItem("authToken");
-  const superAdminEmail = sessionStorage.getItem("email");
+  const createdByEmail = sessionStorage.getItem("email");
 
   const fetchPlans = async () => {
     try {
       const res = await getAllPlans(authToken);
-      if (res?.data) {
-        const formatted = res.data.map((p) => ({
-          ...p,
-          key: p.id,
-          features: Array.isArray(p.features) ? p.features : [], // ensure features is always an array, but do not create any feature
-        }));
-        setPlans(formatted);
-      }
+
+      // Updated to match your API response structure
+      const dataArray = Array.isArray(res.data?.plans) ? res.data.plans : [];
+
+      const formatted = dataArray.map((p) => ({
+        ...p,
+        key: p.id,
+        features: Array.isArray(p.features) ? p.features : [],
+      }));
+
+      setPlans(formatted);
     } catch (error) {
       console.error("Error fetching plans:", error);
       Swal.fire("Error", "Failed to load plans.", "error");
@@ -94,7 +97,7 @@ function CreatePlan() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!authToken || !superAdminEmail) {
+    if (!authToken || !createdByEmail) {
       Swal.fire("Error", "SuperAdmin not logged in. Please login first.", "error");
       return;
     }
@@ -110,7 +113,7 @@ function CreatePlan() {
         discountPercentage: formData.discountPercentage ? Number(formData.discountPercentage) : null,
         isActive: formData.isActive,
         planType: formData.planType,
-        createdByEmail: superAdminEmail,
+        createdByEmail: createdByEmail,
       };
 
       if (editMode && selectedPlanId) {
@@ -137,7 +140,7 @@ function CreatePlan() {
   const handleEdit = (record) => {
     setFormData({
       ...record,
-      features: Array.isArray(record.features) ? record.features : [], // ensure features is always an array
+      features: Array.isArray(record.features) ? record.features : [],
       featuresInput: "",
     });
     setSelectedPlanId(record.id);

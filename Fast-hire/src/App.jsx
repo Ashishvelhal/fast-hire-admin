@@ -47,6 +47,7 @@ const App = () => {
                 <Route path="viewplans" element={<ViewPlans />} />
               </Route>
               <Route path="settings" element={<Settings />} />
+
               {/* <Route path="*" element={<Navigate to="dashboard" replace />} /> */}
             </Route>
 

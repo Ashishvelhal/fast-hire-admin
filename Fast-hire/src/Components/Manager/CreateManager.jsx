@@ -14,9 +14,13 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { Table, message, Spin } from "antd";
-import { createManager, getAllManagers } from "./CreateManager";
+import {
+  createManager,
+  getAllManagers,
+  updateManager,
+  deleteManager,
+} from "./CreateManager"; 
 import indianStatesAndDistricts from "../Common/indianStatesAndDistricts";
-import "../Common/Design.css";
 
 const CreateManager = () => {
   const [open, setOpen] = useState(false);
@@ -25,6 +29,8 @@ const CreateManager = () => {
   const [managers, setManagers] = useState([]);
   const [selectedState, setSelectedState] = useState("");
   const [profilePhoto, setProfilePhoto] = useState(null);
+  const [isEdit, setIsEdit] = useState(false);
+  const [editId, setEditId] = useState(null);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -44,18 +50,17 @@ const CreateManager = () => {
     status: "ACTIVE",
     gender: "",
   });
+
+  // Fetch managers
   const fetchManagers = async () => {
     const authToken = sessionStorage.getItem("authToken");
-    if (!authToken) {
-      message.error("SuperAdmin not logged in. Please login first.");
-      return;
-    }
+    if (!authToken) return message.error("Please login first.");
+
     try {
       setTableLoading(true);
-      const response = await getAllManagers(authToken); 
-      setManagers(response.data || []);
-    } catch (error) {
-      console.error("Error fetching managers:", error);
+      const res = await getAllManagers(authToken);
+      setManagers(res.data || []);
+    } catch {
       message.error("Failed to load managers.");
     } finally {
       setTableLoading(false);
@@ -66,82 +71,118 @@ const CreateManager = () => {
     fetchManagers();
   }, []);
 
-  const handleClickOpen = () => setOpen(true);
+  const handleClickOpen = () => {
+    resetForm();
+    setOpen(true);
+  };
   const handleClose = () => setOpen(false);
 
-  const handleChange = (e) => {
+  const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
 
   const handleStateChange = (e) => {
     const state = e.target.value;
     setSelectedState(state);
     setFormData({ ...formData, state, district: "" });
   };
-  const handleFileChange = (e) => {
-    if (e.target.files && e.target.files[0]) {
-      setProfilePhoto(e.target.files[0]);
-    }
+
+  const handleFileChange = (e) =>
+    e.target.files[0] && setProfilePhoto(e.target.files[0]);
+
+  const resetForm = () => {
+    setFormData({
+      name: "",
+      email: "",
+      password: "",
+      mobileNumber: "",
+      alternatePhone: "",
+      address: "",
+      city: "",
+      district: "",
+      state: "",
+      country: "",
+      pinCode: "",
+      aadharNumber: "",
+      pancardNumber: "",
+      experienceYears: "",
+      status: "ACTIVE",
+      gender: "",
+    });
+    setSelectedState("");
+    setProfilePhoto(null);
+    setIsEdit(false);
+    setEditId(null);
   };
+
   const handleSubmit = async () => {
     const authToken = sessionStorage.getItem("authToken");
-    if (!authToken) {
-      alert("SuperAdmin not logged in. Please login first.");
-      return;
-    }
+    if (!authToken) return message.error("Please login first.");
+
     try {
       setLoading(true);
       const formDataObj = new FormData();
       formDataObj.append("manager", JSON.stringify(formData));
       if (profilePhoto) formDataObj.append("profilePhoto", profilePhoto);
 
-      await createManager(formDataObj, authToken);
-      alert("Manager created successfully!");
-      fetchManagers();
+      if (isEdit && editId) {
+        await updateManager(editId, formDataObj, authToken);
+        message.success("Manager updated successfully!");
+      } else {
+        await createManager(formDataObj, authToken);
+        message.success("Manager created successfully!");
+      }
 
-      setFormData({
-        name: "",
-        email: "",
-        password: "",
-        mobileNumber: "",
-        alternatePhone: "",
-        address: "",
-        city: "",
-        district: "",
-        state: "",
-        country: "",
-        pinCode: "",
-        aadharNumber: "",
-        pancardNumber: "",
-        experienceYears: "",
-        status: "ACTIVE",
-        gender: "",
-      });
-      setSelectedState("");
-      setProfilePhoto(null);
+      fetchManagers();
+      resetForm();
       handleClose();
-    } catch (error) {
-      console.error("Error creating manager:", error);
-      alert("Failed to create manager. Please try again.");
+    } catch {
+      message.error("Failed to submit manager.");
     } finally {
       setLoading(false);
     }
   };
 
+  const handleEdit = (record) => {
+    setIsEdit(true);
+    setEditId(record.id);
+    setFormData({ ...record, password: "" });
+    setSelectedState(record.state);
+    setProfilePhoto(null);
+    setOpen(true);
+  };
+
+  const handleDelete = async (id) => {
+    const authToken = sessionStorage.getItem("authToken");
+    if (!authToken) return message.error("Please login first.");
+    try {
+      await deleteManager(id, authToken);
+      message.success("Manager deleted!");
+      fetchManagers();
+    } catch {
+      message.error("Delete failed.");
+    }
+  };
+
   const columns = [
-        {
-      title: "Sr.No",
-      key: "index",
-      render: (text, record, index) => index + 1,
-      width: 70,
+    { title: "Sr.No", key: "index", render: (_, __, index) => index + 1, width: 70 },
+    {
+      title: "Name",
+      dataIndex: "name",
+      key: "name",
+      render: (text, record) => (
+        <span
+          style={{ cursor: "pointer", color: "blue" }}
+          onClick={() => handleEdit(record)}
+        >
+          {text}
+        </span>
+      ),
     },
-    { title: "Name", dataIndex: "name", key: "name" },
     { title: "Email", dataIndex: "email", key: "email" },
     { title: "Mobile", dataIndex: "mobileNumber", key: "mobileNumber" },
     { title: "Address", dataIndex: "address", key: "address" },
     { title: "State", dataIndex: "state", key: "state" },
     { title: "District", dataIndex: "district", key: "district" },
-    { title: "Exp.Years", dataIndex: "experienceYears", key: "experienceYears" },
     {
       title: "Status",
       dataIndex: "status",
@@ -159,9 +200,13 @@ const CreateManager = () => {
       <Button variant="contained" color="primary" onClick={handleClickOpen}>
         Register Manager
       </Button>
+
+      {/* Dialog */}
       <Dialog open={open} onClose={handleClose} fullWidth maxWidth="md">
         <DialogTitle>
-          <Typography variant="h6">Register Manager</Typography>
+          <Typography variant="h6">
+            {isEdit ? "Update Manager" : "Register Manager"}
+          </Typography>
           <IconButton
             onClick={handleClose}
             sx={{ position: "absolute", right: 8, top: 8 }}
@@ -169,8 +214,9 @@ const CreateManager = () => {
             <CloseIcon />
           </IconButton>
         </DialogTitle>
+
         <DialogContent dividers>
-          <Grid container spacing={2} className="textField-root">
+          <Grid container spacing={2}>
             <Grid item xs={12} sm={3}>
               <TextField
                 label="Name"
@@ -190,6 +236,7 @@ const CreateManager = () => {
                 required
                 value={formData.email}
                 onChange={handleChange}
+                disabled={isEdit}
               />
             </Grid>
             <Grid item xs={12} sm={3}>
@@ -198,7 +245,7 @@ const CreateManager = () => {
                 name="password"
                 type="password"
                 fullWidth
-                required
+                required={!isEdit}
                 value={formData.password}
                 onChange={handleChange}
               />
@@ -213,6 +260,7 @@ const CreateManager = () => {
                 onChange={handleChange}
               />
             </Grid>
+
             <Grid item xs={12} sm={3}>
               <TextField
                 label="Alternate Phone"
@@ -278,90 +326,9 @@ const CreateManager = () => {
                   ))}
               </TextField>
             </Grid>
-            <Grid item xs={12} sm={3}>
-              <TextField
-                label="Country"
-                name="country"
-                fullWidth
-                required
-                value={formData.country}
-                onChange={handleChange}
-              />
-            </Grid>
-            <Grid item xs={12} sm={3}>
-              <TextField
-                label="Pin Code"
-                name="pinCode"
-                fullWidth
-                required
-                value={formData.pinCode}
-                onChange={handleChange}
-              />
-            </Grid>
-            <Grid item xs={12} sm={3}>
-              <TextField
-                label="Aadhar Number"
-                name="aadharNumber"
-                fullWidth
-                required
-                value={formData.aadharNumber}
-                onChange={handleChange}
-              />
-            </Grid>
-            <Grid item xs={12} sm={3}>
-              <TextField
-                label="PAN Number"
-                name="pancardNumber"
-                fullWidth
-                required
-                value={formData.pancardNumber}
-                onChange={handleChange}
-              />
-            </Grid>
-            <Grid item xs={12} sm={3}>
-              <TextField
-                label="Experience (Years)"
-                name="experienceYears"
-                type="number"
-                fullWidth
-                required
-                value={formData.experienceYears}
-                onChange={handleChange}
-              />
-            </Grid>
-            <Grid item xs={12} sm={3}>
-              <TextField
-                select
-                label="Gender"
-                name="gender"
-                fullWidth
-                required
-                value={formData.gender}
-                onChange={handleChange}
-              >
-                <MenuItem value="MALE">Male</MenuItem>
-                <MenuItem value="FEMALE">Female</MenuItem>
-                <MenuItem value="OTHER">Other</MenuItem>
-              </TextField>
-            </Grid>
-            <Grid item xs={12} sm={3}>
-              <Button variant="outlined" component="label" fullWidth>
-                Upload Profile Photo
-                <input
-                  type="file"
-                  hidden
-                  accept="image/*"
-                  onChange={handleFileChange}
-                />
-              </Button>
-              {profilePhoto && (
-                <Typography variant="caption" display="block">
-                  {profilePhoto.name}
-                </Typography>
-              )}
-            </Grid>
           </Grid>
         </DialogContent>
+
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
           <Button
@@ -370,10 +337,12 @@ const CreateManager = () => {
             color="primary"
             disabled={loading}
           >
-            {loading ? "Registering..." : "Register"}
+            {loading ? (isEdit ? "Updating..." : "Registering...") : isEdit ? "Update" : "Register"}
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* Table */}
       <Box mt={3}>
         {tableLoading ? (
           <Spin tip="Loading managers..." />

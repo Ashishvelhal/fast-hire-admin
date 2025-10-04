@@ -25,9 +25,11 @@ const ViewPlans = ({ token, email, role }) => {
     try {
       setLoading(true);
       const response = await getAllPlans(token, email, role);
-      setPlans(response.data);
+      // Fix: extract plans array
+      setPlans(response.data.plans || []);
     } catch (error) {
       console.error("Error fetching plans:", error);
+      setPlans([]);
     } finally {
       setLoading(false);
     }
@@ -42,14 +44,21 @@ const ViewPlans = ({ token, email, role }) => {
     );
   }
 
+  if (!plans.length) {
+    return (
+      <Box textAlign="center" mt={5}>
+        <Typography>No plans available</Typography>
+      </Box>
+    );
+  }
+
   return (
     <Box p={4}>
       <Grid container spacing={4} justifyContent="center">
         {plans.map((plan) => {
           const discountedPrice = plan.price
             ? (
-                plan.price -
-                (plan.price * (plan.discountPercentage || 0)) / 100
+                plan.price - (plan.price * (plan.discountPercentage || 0)) / 100
               ).toFixed(0)
             : 0;
 
@@ -63,7 +72,7 @@ const ViewPlans = ({ token, email, role }) => {
                   ":hover": { transform: "translateY(-8px)", boxShadow: 8 },
                 }}
               >
-                <CardContent sx={{ textAlign: "center", p: 4 }}>
+                <CardContent sx={{ textAlign: "center", p: 4, position: "relative" }}>
                   {plan.discountPercentage >= 30 && (
                     <Chip
                       label="Best Value"
@@ -96,11 +105,7 @@ const ViewPlans = ({ token, email, role }) => {
                         ₹{discountedPrice}
                       </Typography>
                       {plan.discountPercentage > 0 && (
-                        <Typography
-                          variant="body2"
-                          color="error"
-                          gutterBottom
-                        >
+                        <Typography variant="body2" color="error" gutterBottom>
                           {plan.discountPercentage}% OFF (₹{plan.price})
                         </Typography>
                       )}
@@ -108,8 +113,16 @@ const ViewPlans = ({ token, email, role }) => {
                   )}
 
                   <Box mt={2} mb={2}>
-                    <Typography display="flex" alignItems="center" justifyContent="center">
-                      <CheckCircleIcon color="success" fontSize="small" sx={{ mr: 1 }} />
+                    <Typography
+                      display="flex"
+                      alignItems="center"
+                      justifyContent="center"
+                    >
+                      <CheckCircleIcon
+                        color="success"
+                        fontSize="small"
+                        sx={{ mr: 1 }}
+                      />
                       {plan.jobPostLimit} Job Posts
                     </Typography>
                   </Box>
