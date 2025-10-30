@@ -1,5 +1,6 @@
+
 import React, { useEffect, useState } from "react";
-import { getAllPlans } from "./CreatePlans";
+import { getAllPlans } from "./CreatePlans"; // API file
 import {
   Box,
   Typography,
@@ -8,14 +9,18 @@ import {
   CardContent,
   Button,
   CircularProgress,
-  Divider,
   Chip,
+  Divider,
+  Stack,
 } from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import StarIcon from "@mui/icons-material/Star";
+import { useNavigate } from "react-router-dom";
 
-const ViewPlans = ({ token, email, role }) => {
+const ViewPlans = () => {
   const [plans, setPlans] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchPlans();
@@ -24,9 +29,8 @@ const ViewPlans = ({ token, email, role }) => {
   const fetchPlans = async () => {
     try {
       setLoading(true);
-      const response = await getAllPlans(token, email, role);
-      // Fix: extract plans array
-      setPlans(response.data.plans || []);
+      const response = await getAllPlans(); 
+      setPlans(response.plans || []); 
     } catch (error) {
       console.error("Error fetching plans:", error);
       setPlans([]);
@@ -35,11 +39,15 @@ const ViewPlans = ({ token, email, role }) => {
     }
   };
 
+  const handleAssignPlan = (planId, employeeId) => {
+    console.log(`Assigned plan ${planId} to employee ${employeeId}`);
+  };
+
   if (loading) {
     return (
       <Box textAlign="center" mt={5}>
         <CircularProgress />
-        <Typography>Loading Plans...</Typography>
+        <Typography mt={2}>Loading Plans...</Typography>
       </Box>
     );
   }
@@ -53,88 +61,160 @@ const ViewPlans = ({ token, email, role }) => {
   }
 
   return (
-    <Box p={4}>
+    <Box sx={{ p: 4, backgroundColor: "#f9fafc", minHeight: "100vh" }}>
+
+
       <Grid container spacing={4} justifyContent="center">
         {plans.map((plan) => {
           const discountedPrice = plan.price
             ? (
-                plan.price - (plan.price * (plan.discountPercentage || 0)) / 100
+                plan.price -
+                (plan.price * (plan.discountPercentage || 0)) / 100
               ).toFixed(0)
             : 0;
 
           return (
-            <Grid item xs={12} sm={6} md={4} key={plan.id}>
+            <Grid item xs={12} md={6} lg={4} key={plan.id}>
               <Card
                 sx={{
-                  borderRadius: "20px",
-                  boxShadow: 5,
-                  transition: "transform 0.3s, box-shadow 0.3s",
-                  ":hover": { transform: "translateY(-8px)", boxShadow: 8 },
+                  borderRadius: "18px",
+                  overflow: "hidden",
+                  boxShadow: "0 6px 20px rgba(0,0,0,0.08)",
+                  transition: "0.3s",
+                  ":hover": {
+                    transform: "translateY(-6px)",
+                    boxShadow: "0 8px 25px rgba(0,0,0,0.12)",
+                  },
                 }}
               >
-                <CardContent sx={{ textAlign: "center", p: 4, position: "relative" }}>
+                {/* Header */}
+                <Box
+                  sx={{
+                    background: "linear-gradient(135deg, #1976d2, #64b5f6)",
+                    color: "white",
+                    p: 2,
+                    position: "relative",
+                    textAlign: "center",
+                  }}
+                >
                   {plan.discountPercentage >= 30 && (
                     <Chip
+                      icon={<StarIcon />}
                       label="Best Value"
-                      color="primary"
-                      sx={{ position: "absolute", top: 20, right: 20 }}
+                      color="warning"
+                      sx={{
+                        position: "absolute",
+                        top: 15,
+                        right: 15,
+                        fontWeight: "bold",
+                      }}
                     />
                   )}
                   <Typography variant="h6" fontWeight="bold">
                     {plan.name}
                   </Typography>
-
-                  <Typography variant="body2" color="textSecondary" mt={1}>
+                  <Typography variant="body2" color="white">
                     Valid for {plan.durationInMonths} months
                   </Typography>
+                </Box>
 
-                  <Divider sx={{ my: 2 }} />
-
-                  {plan.price === 0 ? (
-                    <Typography
-                      variant="h4"
-                      color="success.main"
-                      fontWeight="bold"
-                      gutterBottom
-                    >
-                      Free
-                    </Typography>
-                  ) : (
-                    <>
-                      <Typography variant="h4" color="primary" fontWeight="bold">
-                        ₹{discountedPrice}
+                {/* Content */}
+                <CardContent sx={{ p: 3 }}>
+                  <Stack alignItems="center" spacing={1.5}>
+                    {/* Price Section */}
+                    {plan.price === 0 ? (
+                      <Typography
+                        variant="h4"
+                        color="success.main"
+                        fontWeight="bold"
+                      >
+                        Free
                       </Typography>
-                      {plan.discountPercentage > 0 && (
-                        <Typography variant="body2" color="error" gutterBottom>
-                          {plan.discountPercentage}% OFF (₹{plan.price})
+                    ) : (
+                      <>
+                        <Typography variant="h4" color="primary" fontWeight="bold">
+                          ₹{discountedPrice}
+                        </Typography>
+                        {plan.discountPercentage > 0 && (
+                          <Typography
+                            variant="body2"
+                            color="error"
+                            sx={{ textDecoration: "line-through" }}
+                          >
+                            ₹{plan.price} ({plan.discountPercentage}% OFF)
+                          </Typography>
+                        )}
+                      </>
+                    )}
+
+                    <Divider sx={{ width: "100%", my: 2 }} />
+
+                    {/* Features */}
+                    <Box>
+                      <Typography
+                        variant="subtitle1"
+                        fontWeight="bold"
+                        textAlign="center"
+                        mb={1}
+                      >
+                        Features:
+                      </Typography>
+
+                      {plan.features?.length ? (
+                        <Stack spacing={1} alignItems="center">
+                          {plan.features.map((feature, idx) => (
+                            <Box
+                              key={idx}
+                              display="flex"
+                              alignItems="center"
+                              gap={1}
+                            >
+                              <CheckCircleIcon color="success" fontSize="small" />
+                              <Typography variant="body2">{feature}</Typography>
+                            </Box>
+                          ))}
+                        </Stack>
+                      ) : (
+                        <Typography variant="body2" color="text.secondary">
+                          No features listed
                         </Typography>
                       )}
-                    </>
-                  )}
+                    </Box>
 
-                  <Box mt={2} mb={2}>
                     <Typography
-                      display="flex"
-                      alignItems="center"
-                      justifyContent="center"
+                      variant="body2"
+                      color="textSecondary"
+                      sx={{ mt: 2 }}
                     >
-                      <CheckCircleIcon
-                        color="success"
-                        fontSize="small"
-                        sx={{ mr: 1 }}
-                      />
-                      {plan.jobPostLimit} Job Posts
+                      Includes {plan.jobPostLimit} job posts
                     </Typography>
-                  </Box>
 
-                  <Button
-                    variant="contained"
-                    fullWidth
-                    color={plan.price === 0 ? "primary" : "success"}
-                    sx={{ mt: 2, py: 1.5, borderRadius: "12px", fontWeight: "bold" }}
-                  >
-                    {plan.price === 0 ? "Get Started" : "Buy Now"}
-                  </Button>
+                    {/* Button */}
+                    <Button
+                      variant="contained"
+                      color={plan.price === 0 ? "primary" : "success"}
+                      fullWidth
+                      sx={{
+                        mt: 3,
+                        py: 1.3,
+                        borderRadius: "10px",
+                        fontWeight: "bold",
+                        textTransform: "none",
+                      }}
+                      onClick={() => {
+                        if (plan.price === 0) {
+                          handleAssignPlan(plan.id, "new_employee_id");
+                        } else {
+                          handleAssignPlan(plan.id, "selected_employer_id");
+                          navigate("/admin/fasthireadminlayout/employe", {
+                            state: { plan },
+                          });
+                        }
+                      }}
+                    >
+                      {plan.price === 0 ? "Start for Free" : "Buy Now"}
+                    </Button>
+                  </Stack>
                 </CardContent>
               </Card>
             </Grid>

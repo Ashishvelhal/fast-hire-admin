@@ -1,183 +1,422 @@
+// import React, { useEffect, useState } from "react";
+// import {
+//     createLocation,
+//     getAllLocations,
+//     updateLocation,
+//     deleteLocation,
+// } from "./Location";
+// import {
+//     Box,
+//     Button,
+//     TextField,
+//     Dialog,
+//     DialogTitle,
+//     DialogContent,
+//     DialogActions,
+//     Chip
+// } from "@mui/material";
+// import { Table } from "antd";
+// import "../Common/Design.css";
+
+// const Location = () => {
+//     const authToken = sessionStorage.getItem("authToken");
+//     const [locations, setLocations] = useState([]);
+//     const [search, setSearch] = useState("");
+//     const [open, setOpen] = useState(false);
+//     const [newLocation, setNewLocation] = useState("");
+//     const [editLocation, setEditLocation] = useState(null);
+
+//     const fetchLocations = async () => {
+//         try {
+//             const response = await getAllLocations(authToken);
+//             console.log("API response:", response.data);
+//             const data = Array.isArray(response.data) ? response.data : response.data?.data || [];
+//             setLocations(data);
+//         } catch (err) {
+//             console.error("Error fetching locations:", err);
+//         }
+//     };
+
+//     useEffect(() => {
+//         fetchLocations();
+//     }, []);
+
+//     const handleSave = async () => {
+//         if (!newLocation.trim()) return alert("Location name is required");
+
+//         try {
+//             const payload = { locationname: newLocation };
+//             if (editLocation) {
+//                 await updateLocation(editLocation.id, payload, authToken);
+//             } else {
+//                 await createLocation(payload, authToken);
+//             }
+//             setOpen(false);
+//             setNewLocation("");
+//             setEditLocation(null);
+//             fetchLocations();
+//         } catch (err) {
+//             console.error("Error saving location:", err);
+//         }
+//     };
+
+//     const handleDelete = async (id) => {
+//         if (!window.confirm("Are you sure you want to delete this location?")) return;
+//         try {
+//             await deleteLocation(id, authToken);
+//             setLocations((prev) => prev.filter((loc) => loc.id !== id));
+//         } catch (err) {
+//             console.error("Error deleting location:", err);
+//         }
+//     };
+
+//     const filteredLocations = locations.filter(
+//         (loc) =>
+//             loc.locationname &&
+//             loc.locationname.toLowerCase().includes(search.toLowerCase())
+//     );
+
+//     const columns = [
+//         {
+//             title: "ID",
+//             dataIndex: "id",
+//             key: "id",
+//             render: (_, __, index) => index + 1,
+//         },
+//         {
+//             title: "Location",
+//             dataIndex: "locationname",
+//             key: "locationname",
+//         },
+//         // {
+//         //     title: "Action",
+//         //     key: "action",
+//         //     render: (_, record) => (
+//         //         <>
+//         //             {/* <Button
+//         //                 variant="contained"
+//         //                 size="small"
+//         //                 sx={{ mr: 1 }}
+//         //                 onClick={() => {
+//         //                     setEditLocation(record);
+//         //                     setNewLocation(record.locationname);
+//         //                     setOpen(true);
+//         //                 }}
+//         //             >
+//         //                 Edit
+//         //             </Button> */}
+
+//         //             {/* <Button
+//         //                 variant="outlined"
+//         //                 color="error"
+//         //                 size="small"
+//         //                 onClick={() => handleDelete(record.id)}
+//         //             >
+//         //                 Delete
+//         //             </Button> */}
+//         //         </>
+//         //     ),
+//         // },
+//     ];
+
+//     return (
+//         <Box sx={{ p: 3 }}>
+//             <Box
+//                 sx={{
+//                     display: "flex",
+//                     justifyContent: "space-between",
+//                     alignItems: "center",
+//                     mb: 2
+//                 }}
+//             >
+//                 <TextField
+//                     placeholder="Search Location"
+//                     value={search}
+//                     onChange={(e) => setSearch(e.target.value)}
+//                     size="small"
+//                     sx={{ width: 250 }}
+//                 />
+
+//                 <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+//                     <Button
+//                         variant="contained"
+//                         onClick={() => setOpen(true)}
+//                         sx={{ minWidth: 140, height: 36 }}
+//                     >
+//                         Add Location
+//                     </Button>
+
+//                     <Box sx={{ display: "flex", justifyContent: "flex-start" }}>
+//                         <Chip
+//                             label={`Total  : ${filteredLocations.length}`}
+//                             sx={{
+//                                 border: "1px solid #1976D2",
+//                                 backgroundColor: "transparent",
+//                                 fontWeight: "bold",
+//                                 color: "#1976D2",
+//                                 ml: 2,
+//                             }}
+//                             variant="outlined"
+//                         />
+//                     </Box>
+//                 </Box>
+//             </Box>
+//             <Table
+//                 className="table-root"
+//                 columns={columns}
+//                 dataSource={filteredLocations}
+//                 rowKey="id"
+//                 bordered
+//                 pagination={{ pageSize: 5 }}
+//                 locale={{ emptyText: "No locations found" }}
+//             />
+
+//             <Dialog open={open} onClose={() => setOpen(false)}>
+//                 <DialogTitle>
+//                     {editLocation ? "Edit Location" : "Add Location"}
+//                 </DialogTitle>
+//                 <DialogContent className="textField-root">
+//                     <TextField
+//                         label="Location Name"
+//                         fullWidth
+//                         value={newLocation}
+//                         onChange={(e) => setNewLocation(e.target.value)}
+//                         sx={{ mt: 2 }}
+//                     />
+//                 </DialogContent>
+//                 <DialogActions>
+//                     <Button onClick={() => setOpen(false)}>Cancel</Button>
+//                     <Button variant="contained" onClick={handleSave}>
+//                         Save
+//                     </Button>
+//                 </DialogActions>
+//             </Dialog>
+//         </Box>
+//     );
+// };
+
+// export default Location;
 import React, { useEffect, useState } from "react";
 import {
-    createLocation,
-    getAllLocations,
-    updateLocation,
-    deleteLocation,
+  createLocation,
+  getAllLocations,
+  updateLocation,
+  deleteLocation,
 } from "./Location";
 import {
-    Box,
-    Button,
-    TextField,
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
+  Box,
+  Button,
+  TextField,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Chip,
+  IconButton,
+  Stack,
 } from "@mui/material";
-import { Table } from "antd";
+import { Table ,Popconfirm} from "antd";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
+import "../Common/Design.css";
+
 const Location = () => {
-    const authToken = sessionStorage.getItem("authToken");
-    const [locations, setLocations] = useState([]);
-    const [search, setSearch] = useState("");
-    const [open, setOpen] = useState(false);
-    const [newLocation, setNewLocation] = useState("");
-    const [editLocation, setEditLocation] = useState(null);
+  const authToken = sessionStorage.getItem("authToken");
+  const [locations, setLocations] = useState([]);
+  const [search, setSearch] = useState("");
+  const [open, setOpen] = useState(false);
+  const [newLocation, setNewLocation] = useState("");
+  const [editLocation, setEditLocation] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-    const fetchLocations = async () => {
-        try {
-            const response = await getAllLocations(authToken);
-            console.log("API response:", response.data);
-            const data = Array.isArray(response.data) ? response.data : response.data?.data || [];
-            setLocations(data);
-        } catch (err) {
-            console.error("Error fetching locations:", err);
-        }
-    };
+  // ✅ Fetch all locations
+  const fetchLocations = async () => {
+    try {
+      setLoading(true);
+      const response = await getAllLocations(authToken);
+      const data = Array.isArray(response.data)
+        ? response.data
+        : response.data?.data || [];
+      setLocations(data);
+    } catch (err) {
+      console.error("Error fetching locations:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    useEffect(() => {
-        fetchLocations();
-    }, []);
+  useEffect(() => {
+    fetchLocations();
+  }, []);
 
-    const handleSave = async () => {
-        if (!newLocation.trim()) return alert("Location name is required");
+  // ✅ Handle Add / Update
+  const handleSave = async () => {
+    if (!newLocation.trim()) return alert("Location name is required");
 
-        try {
-            const payload = { locationname: newLocation };
-            if (editLocation) {
-                await updateLocation(editLocation.id, payload, authToken);
-            } else {
-                await createLocation(payload, authToken);
-            }
-            setOpen(false);
-            setNewLocation("");
-            setEditLocation(null);
-            fetchLocations();
-        } catch (err) {
-            console.error("Error saving location:", err);
-        }
-    };
+    try {
+      const payload = { locationname: newLocation };
+      if (editLocation) {
+        await updateLocation(editLocation.id, payload, authToken);
+      } else {
+        await createLocation(payload, authToken);
+      }
+      setOpen(false);
+      setNewLocation("");
+      setEditLocation(null);
+      fetchLocations();
+    } catch (err) {
+      console.error("Error saving location:", err);
+    }
+  };
 
-    const handleDelete = async (id) => {
-        if (!window.confirm("Are you sure you want to delete this location?")) return;
-        try {
-            await deleteLocation(id, authToken);
-            setLocations((prev) => prev.filter((loc) => loc.id !== id));
-        } catch (err) {
-            console.error("Error deleting location:", err);
-        }
-    };
+  // ✅ Handle Delete
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this location?")) return;
+    try {
+      await deleteLocation(id, authToken);
+      setLocations((prev) => prev.filter((loc) => loc.id !== id));
+    } catch (err) {
+      console.error("Error deleting location:", err);
+    }
+  };
 
-    const filteredLocations = locations.filter(
-        (loc) =>
-            loc.locationname &&
-            loc.locationname.toLowerCase().includes(search.toLowerCase())
-    );
+  // ✅ Search filter
+  const filteredLocations = locations.filter(
+    (loc) =>
+      loc.locationname &&
+      loc.locationname.toLowerCase().includes(search.toLowerCase())
+  );
 
-    const columns = [
-        {
-            title: "ID",
-            dataIndex: "id",
-            key: "id",
-            render: (_, __, index) => index + 1, 
-        },
-        {
-            title: "Location",
-            dataIndex: "locationname",
-            key: "locationname",
-        },
-        {
-            title: "Action",
-            key: "action",
-            render: (_, record) => (
-                <>
-                    <Button
-                        variant="contained"
-                        size="small"
-                        sx={{ mr: 1 }}
-                        onClick={() => {
-                            setEditLocation(record);
-                            setNewLocation(record.locationname);
-                            setOpen(true);
-                        }}
-                    >
-                        Edit
-                    </Button>
-                    {/* <Button
-                        variant="outlined"
-                        color="error"
-                        size="small"
-                        onClick={() => handleDelete(record.id)}
-                    >
-                        Delete
-                    </Button> */}
-                </>
-            ),
-        },
-    ];
-
-    return (
-        <Box sx={{ p: 3 }}>
-            <Box
-                sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    mb: 2,
-                }}
+  // ✅ Table Columns
+  const columns = [
+    {
+      title: "Sr.No",
+      key: "serial",
+      render: (_, __, index) => index + 1,
+    },
+    {
+      title: "Location Name",
+      dataIndex: "locationname",
+      key: "locationname",
+    },
+    {
+      title: "Actions",
+      key: "actions",
+      render: (_, record) => (
+        <Box >
+          {/* <IconButton
+            color="primary"
+            size="small"
+            onClick={() => {
+              setEditLocation(record);
+              setNewLocation(record.locationname);
+              setOpen(true);
+            }}
+          >
+            <EditIcon />
+          </IconButton> */}
+          <Popconfirm
+            title="Are you sure to delete this company?"
+            onConfirm={() => handleDelete(record.id)}
+            okText="Yes"
+            cancelText="No"
+          >
+            <Button
+              variant="outlined"
+              color="error"
+              size="small"
             >
-                <TextField
-                    placeholder="Search Location"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    size="small"
-                    sx={{ width: 250 }}
-                />
-
-                <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                    <Button
-                        variant="contained"
-                        onClick={() => setOpen(true)}
-                        sx={{ minWidth: 140, height: 36 }}
-                    >
-                        Add Location
-                    </Button>
-                    <Box sx={{ fontWeight: "bold" }}>
-                        Total: {filteredLocations.length}
-                    </Box>
-                </Box>
-            </Box>
-
-            <Table
-                columns={columns}
-                dataSource={filteredLocations}
-                rowKey="id"
-                bordered
-                pagination={{ pageSize: 5 }}
-                locale={{ emptyText: "No locations found" }}
-            />
-
-            <Dialog open={open} onClose={() => setOpen(false)}>
-                <DialogTitle>
-                    {editLocation ? "Edit Location" : "Add Location"}
-                </DialogTitle>
-                <DialogContent>
-                    <TextField
-                        label="Location Name"
-                        fullWidth
-                        value={newLocation}
-                        onChange={(e) => setNewLocation(e.target.value)}
-                        sx={{ mt: 2 }}
-                    />
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={() => setOpen(false)}>Cancel</Button>
-                    <Button variant="contained" onClick={handleSave}>
-                        Save
-                    </Button>
-                </DialogActions>
-            </Dialog>
+              Delete
+            </Button>
+          </Popconfirm>
         </Box>
-    );
+      ),
+    },
+  ];
+
+  return (
+    <Box p={3}>
+      {/* Header */}
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          mb: 2,
+        }}
+      >
+        <TextField
+          label="Search Location"
+          size="small"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          sx={{ width: 250 }}
+        />
+
+        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+          <Button
+            variant="contained"
+            onClick={() => setOpen(true)}
+            sx={{ minWidth: 140, height: 36 }}
+          >
+            Add Location
+          </Button>
+
+          <Chip
+            label={`Total Locations: ${filteredLocations.length}`}
+            sx={{
+              border: "1px solid #1976D2",
+              backgroundColor: "transparent",
+              fontWeight: "bold",
+              color: "#1976D2",
+              ml: 2,
+            }}
+            variant="outlined"
+          />
+        </Box>
+      </Box>
+
+      {/* Table */}
+      <Table
+        className="table-root"
+        columns={columns}
+        dataSource={filteredLocations}
+        rowKey="id"
+        bordered
+        loading={loading}
+        pagination={{
+          pageSize: 10,
+          showSizeChanger: true,
+          pageSizeOptions: ["10", "25", "50", "100"],
+          showTotal: (total, range) =>
+            `${range[0]}-${range[1]} of ${total} locations`,
+        }}
+        locale={{ emptyText: "No locations found" }}
+      />
+
+      {/* Dialog */}
+      <Dialog open={open} onClose={() => setOpen(false)} fullWidth maxWidth="sm">
+        <DialogTitle>
+          {editLocation ? "Edit Location" : "Add Location"}
+        </DialogTitle>
+        <DialogContent className="textField-root">
+          <TextField
+            label="Location Name"
+            fullWidth
+            value={newLocation}
+            onChange={(e) => setNewLocation(e.target.value)}
+            sx={{ mt: 2 }}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpen(false)}>Cancel</Button>
+          <Button variant="contained" onClick={handleSave}>
+            {editLocation ? "Update" : "Save"}
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Box>
+  );
 };
 
 export default Location;

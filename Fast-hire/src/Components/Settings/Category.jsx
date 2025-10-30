@@ -1,267 +1,275 @@
 // import React, { useEffect, useState } from "react";
+// import { getSubcategoriesByCategory } from "../Common/jobSettingsService";
 // import {
-//     createCategory,
-//     getAllCategories,
-//     getCategoryById,
-//     updateCategory,
-//     deleteCategory,
+//   createCategory,
+//   getAllCategories,
+//   getCategoryById,
+//   updateCategory,
+//   deleteCategory,
 // } from "./Category";
 // import {
-//     Box,
-//     Button,
-//     TextField,
-//     Dialog,
-//     DialogTitle,
-//     DialogContent,
-//     DialogActions,
+//   Box,
+//   Button,
+//   TextField,
+//   Dialog,
+//   DialogTitle,
+//   DialogContent,
+//   DialogActions,
+//   InputAdornment,
+//   Typography,
+//   Chip
 // } from "@mui/material";
 // import { Table } from "antd";
+// import SearchIcon from "@mui/icons-material/Search";
 // import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-// import Skills from "./Skills.jsx";
+// import Subcategory from "./SubCategory.jsx";
+// import "../Common/Design.css";
 
-// const Category = ({ onBack  }) => {
-//     const authToken = sessionStorage.getItem("authToken");
-//     const [categories, setCategories] = useState([]);
-//     const [search, setSearch] = useState("");
-//     const [open, setOpen] = useState(false);
-//     const [newCategory, setNewCategory] = useState("");
-//     const [editCategory, setEditCategory] = useState(null);
-//     const [loading, setLoading] = useState(false);
-//     const [showSkills, setShowSkills] = useState(false);
-//     const [selectedCategory, setSelectedCategory] = useState(null);
+// const Category = ({ onBack, industryId, industryName }) => {
+//   const authToken = sessionStorage.getItem("authToken");
+//   const [categories, setCategories] = useState([]);
+//   const [search, setSearch] = useState("");
+//   const [openDialog, setOpenDialog] = useState(false);
+//   const [newCategory, setNewCategory] = useState("");
+//   const [editCategory, setEditCategory] = useState(null);
+//   const [showSubcategories, setShowSubcategories] = useState(false);
+//   const [selectedCategory, setSelectedCategory] = useState(null);
+//   const [categorySubcategories, setCategorySubcategories] = useState([]);
 
-//     const fetchCategories = async () => {
-//         try {
-//             const response = await getAllCategories(authToken);
-//             console.log("API response:", response.data);
-//             const data = Array.isArray(response.data) ? response.data : response.data?.data || [];
-//             setCategories(data);
-//         } catch (err) {
-//             console.error("Error fetching categories:", err);
-//         }
-//     };
-
-//     useEffect(() => {
-//         fetchCategories();
-//     }, []);
-
-//     const handleEdit = async (record) => {
-//         try {
-//             setLoading(true);
-//             const response = await getCategoryById(record.id, authToken);
-//             const categoryData = response.data?.data || response.data;
-            
-//             setEditCategory(categoryData);
-//             setNewCategory(categoryData.categoryname || record.categoryname);
-//             setOpen(true);
-//         } catch (err) {
-//             console.error("Error fetching category by ID:", err);
-//             setEditCategory(record);
-//             setNewCategory(record.categoryname);
-//             setOpen(true);
-//         } finally {
-//             setLoading(false);
-//         }
-//     };
-
-//     const handleSave = async () => {
-//         if (!newCategory.trim()) return alert("Category name is required");
-
-//         try {
-//             const payload = { categoryname: newCategory };
-//             if (editCategory) {
-//                 await updateCategory(editCategory.id, payload, authToken);
-//             } else {
-//                 await createCategory(payload, authToken);
-//             }
-//             setOpen(false);
-//             setNewCategory("");
-//             setEditCategory(null);
-//             fetchCategories();
-//         } catch (err) {
-//             console.error("Error saving category:", err);
-//             alert("Error saving category. Please try again.");
-//         }
-//     };
-
-//     const handleDelete = async (id) => {
-//         if (!window.confirm("Are you sure you want to delete this category?")) return;
-//         try {
-//             await deleteCategory(id, authToken);
-//             setCategories((prev) => prev.filter((cat) => cat.id !== id));
-//         } catch (err) {
-//             console.error("Error deleting category:", err);
-//             alert("Error deleting category. Please try again.");
-//         }
-//     };
-
-//     const handleDialogClose = () => {
-//         setOpen(false);
-//         setNewCategory("");
-//         setEditCategory(null);
-//     };
-
-//     const handleAddSkills = (record) => {
-//         setSelectedCategory(record);
-//         setShowSkills(true);
-//     };
-
-//     const handleBackFromSkills = () => {
-//         setShowSkills(false);
-//         setSelectedCategory(null);
-//         fetchCategories();
-//     };
-
-//     const filteredCategories = categories.filter(
-//         (cat) =>
-//             cat.categoryname &&
-//             cat.categoryname.toLowerCase().includes(search.toLowerCase())
-//     );
-
-//     if (showSkills && selectedCategory) {
-//         return (
-//             <Skills
-//                 categoryId={selectedCategory.id}
-//                 categoryName={selectedCategory.categoryname}
-//                 onBack={handleBackFromSkills}
-//             />
-//         );
+//   const fetchCategories = async () => {
+//     try {
+//       const response = await getAllCategories(authToken, industryId);
+//       const data = Array.isArray(response.data)
+//         ? response.data
+//         : response.data?.data || [];
+//       setCategories(data);
+//     } catch (err) {
+//       console.error("Error fetching categories:", err);
 //     }
+//   };
 
-//     const columns = [
-//         {
-//             title: "ID",
-//             dataIndex: "id",
-//             key: "id",
-//             render: (_, __, index) => index + 1,
-//         },
-//         {
-//             title: "Category",
-//             dataIndex: "categoryname",
-//             key: "categoryname",
-//         },
-//         {
-//             title: "Action",
-//             key: "action",
-//             render: (_, record) => (
-//                 <>
-//                     <Button
-//                         variant="contained"
-//                         size="small"
-//                         sx={{ mr: 1 }}
-//                         onClick={() => handleEdit(record)}
-//                         disabled={loading}
-//                     >
-//                         Edit
-//                     </Button>
-//                     <Button
-//                         variant="outlined"
-//                         size="small"
-//                         sx={{ mr: 1 }}
-//                         onClick={() => handleAddSkills(record)}
-//                     >
-//                         Add Skills
-//                     </Button>
-//                     {/* <Button
-//                         variant="outlined"
-//                         color="error"
-//                         size="small"
-//                         onClick={() => handleDelete(record.id)}
-//                     >
-//                         Delete
-//                     </Button> */}
-//                 </>
-//             ),
-//         },
-//     ];
+//   useEffect(() => {
+//     fetchCategories();
+//   }, [industryId]);
 
+//   const handleSave = async () => {
+//     if (!newCategory.trim()) return alert("Category name is required");
+
+//     const payload = { categoryname: newCategory, industryId };
+//     try {
+//       if (editCategory) {
+//         await updateCategory(editCategory.id, payload, authToken);
+//       } else {
+//         await createCategory(payload, authToken);
+//       }
+//       setOpenDialog(false);
+//       setNewCategory("");
+//       setEditCategory(null);
+//       fetchCategories();
+//     } catch (err) {
+//       console.error("Error saving category:", err);
+//     }
+//   };
+
+//   const handleAddSubcategory = async (category) => {
+//     setSelectedCategory(category);
+//     try {
+//       const response = await getSubcategoriesByCategory(category.id, authToken);
+//       const subcategories = Array.isArray(response.data)
+//         ? response.data
+//         : response.data?.data || [];
+//       setCategorySubcategories(subcategories);
+//     } catch (err) {
+//       console.error("Error fetching subcategories:", err);
+//       setCategorySubcategories([]);
+//     }
+//     setShowSubcategories(true);
+//   };
+
+//   const handleBackFromSubcategories = () => {
+//     setShowSubcategories(false);
+//     setSelectedCategory(null);
+//     fetchCategories();
+//   };
+
+//   const filteredCategories = categories.filter(
+//     (cat) =>
+//       cat.categoryname &&
+//       cat.categoryname.toLowerCase().includes(search.toLowerCase())
+//   );
+
+//   if (showSubcategories && selectedCategory) {
 //     return (
-//         <Box sx={{ p: 3 }}>
-//             <Box sx={{ mb: 2 }}>
-//                 <Button
-//                     variant="outlined"
-//                     startIcon={<ArrowBackIcon />}
-//                     onClick={onBack}
-//                 >
-//                     Back
-//                 </Button>
-//             </Box>
+//       <Box sx={{ p: 3 }}>
 
-//             <Box
-//                 sx={{
-//                     display: "flex",
-//                     justifyContent: "space-between",
-//                     alignItems: "center",
-//                     mb: 2,
-//                 }}
-//             >
-//                 <TextField
-//                     placeholder="Search Category"
-//                     value={search}
-//                     onChange={(e) => setSearch(e.target.value)}
-//                     size="small"
-//                     sx={{ width: 250 }}
-//                 />
-
-//                 <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-//                     <Button
-//                         variant="contained"
-//                         onClick={() => setOpen(true)}
-//                         sx={{ minWidth: 140, height: 36 }}
-//                     >
-//                         Add Category
-//                     </Button>
-//                     <Box sx={{ fontWeight: "bold" }}>
-//                         Total: {filteredCategories.length}
-//                     </Box>
-//                 </Box>
-//             </Box>
-
-//             <Table
-//                 columns={columns}
-//                 dataSource={filteredCategories}
-//                 rowKey="id"
-//                 bordered
-//                 pagination={{ pageSize: 5 }}
-//                 locale={{ emptyText: "No categories found" }}
-//                 loading={loading}
-//             />
-
-//             <Dialog open={open} onClose={handleDialogClose}>
-//                 <DialogTitle>
-//                     {editCategory ? "Edit Category" : "Add Category"}
-//                 </DialogTitle>
-//                 <DialogContent>
-//                     <TextField
-//                         label="Category Name"
-//                         fullWidth
-//                         value={newCategory}
-//                         onChange={(e) => setNewCategory(e.target.value)}
-//                         sx={{ mt: 2 }}
-//                         autoFocus
-//                     />
-//                 </DialogContent>
-//                 <DialogActions>
-//                     <Button onClick={handleDialogClose}>Cancel</Button>
-//                     <Button variant="contained" onClick={handleSave}>
-//                         Save
-//                     </Button>
-//                 </DialogActions>
-//             </Dialog>
-//         </Box>
+//         <Subcategory
+//           categoryId={selectedCategory.id}
+//           categoryName={selectedCategory.categoryname}
+//           subcategories={categorySubcategories}
+//           onBack={handleBackFromSubcategories}
+//         />
+//       </Box>
 //     );
+//   }
+
+//   const columns = [
+//     {
+//       title: "ID",
+//       key: "srno",
+//       render: (_, __, index) => index + 1,
+//     },
+//     {
+//       title: "Job Role",
+//       dataIndex: "categoryname",
+//       key: "categoryname",
+//     },
+//     {
+//       title: "Action",
+//       key: "action",
+//       render: (_, record) => (
+//         <Button
+//           variant="contained"
+//           size="small"
+//           sx={{
+//             backgroundColor: "#f57c00",
+//             "&:hover": { backgroundColor: "#ef6c00" },
+//             textTransform: "none",
+//           }}
+//           onClick={() => handleAddSubcategory(record)}
+//         >
+//           Add Subcategory
+//         </Button>
+//       ),
+//     },
+//   ];
+
+//   return (
+//     <Box sx={{ p: 3 }}>
+//       <Button
+//         variant="outlined"
+//         startIcon={<ArrowBackIcon />}
+//         onClick={onBack}
+//         sx={{
+//           mb: 3,
+//           textTransform: "none",
+//           borderColor: "#1976d2",
+//           color: "#1976d2",
+//           "&:hover": {
+//             borderColor: "#1565c0",
+//             bgcolor: "#e3f2fd",
+//           },
+//         }}
+//       >
+//         Back
+//       </Button>
+
+//       {/* Header and Actions */}
+//       <Box
+//         sx={{
+//           display: "flex",
+//           alignItems: "center",
+//           justifyContent: "space-between",
+//           mb: 2,
+//           gap: 2,
+//         }}
+//       >
+//         <TextField
+//           placeholder="Search Job Role"
+//           value={search}
+//           onChange={(e) => setSearch(e.target.value)}
+//           size="small"
+//           sx={{ width: 250 }}
+//           InputProps={{
+//             endAdornment: (
+//               <InputAdornment position="end">
+//                 <SearchIcon sx={{ color: "#999" }} />
+//               </InputAdornment>
+//             ),
+//           }}
+//         />
+
+//         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+//           <Button
+//             variant="contained"
+//             sx={{
+//               backgroundColor: "#1976d2",
+//               "&:hover": { backgroundColor: "#1565c0" },
+//               textTransform: "none",
+//             }}
+//             onClick={() => {
+//               setOpenDialog(true);
+//               setEditCategory(null);
+//               setNewCategory("");
+//             }}
+//           >
+//             Add Job Role
+//           </Button>
+//           {/* <Box sx={{ fontWeight: "bold" }}>Total: {filteredCategories.length}</Box> */}
+//           <Box sx={{ display: "flex", justifyContent: "flex-start" }}>
+//             <Chip
+//               label={`Total  : ${filteredCategories.length}`}
+//               sx={{
+//                 border: "1px solid #1976D2",
+//                 backgroundColor: "transparent",
+//                 fontWeight: "bold",
+//                 color: "#1976D2",
+//                 ml: 2,
+//               }}
+//               variant="outlined"
+//             />
+//           </Box>
+//         </Box>
+//       </Box>
+
+//       {/* Table */}
+//       <Table
+//         className="table-root"
+//         columns={columns}
+//         dataSource={filteredCategories}
+//         rowKey="id"
+//         bordered
+//         pagination={{ pageSize: 5 }}
+//         locale={{ emptyText: "No job roles found" }}
+//       />
+
+//       {/* Dialog */}
+//       <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
+//         <DialogTitle>{editCategory ? "Edit Job Role" : "Add Job Role"}</DialogTitle>
+//         <DialogContent className="textField-root">
+//           <TextField
+//             label="Job Role Name"
+//             fullWidth
+//             value={newCategory}
+//             onChange={(e) => setNewCategory(e.target.value)}
+//             sx={{ mt: 2 }}
+//           />
+//         </DialogContent>
+//         <DialogActions>
+//           <Button onClick={() => setOpenDialog(false)}>Cancel</Button>
+//           <Button
+//             variant="contained"
+//             sx={{
+//               backgroundColor: "#1976d2",
+//               "&:hover": { backgroundColor: "#1565c0" },
+//               textTransform: "none",
+//             }}
+//             onClick={handleSave}
+//           >
+//             Save
+//           </Button>
+//         </DialogActions>
+//       </Dialog>
+//     </Box>
+//   );
 // };
 
 // export default Category;
-
 import React, { useEffect, useState } from "react";
+import { getSubcategoriesByCategory } from "../Common/jobSettingsService";
 import {
   createCategory,
   getAllCategories,
-  getCategoryById,
   updateCategory,
-  deleteCategory,
-  getSkillsByCategory, 
 } from "./Category";
 import {
   Box,
@@ -271,149 +279,119 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  InputAdornment,
+  Chip,
 } from "@mui/material";
 import { Table } from "antd";
+import SearchIcon from "@mui/icons-material/Search";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import Skills from "./Skills.jsx";
+import Subcategory from "./SubCategory.jsx";
+import "../Common/Design.css";
 
-const Category = ({ onBack }) => {
+const Category = ({ onBack, industryId, industryName }) => {
   const authToken = sessionStorage.getItem("authToken");
   const [categories, setCategories] = useState([]);
   const [search, setSearch] = useState("");
-  const [open, setOpen] = useState(false);
+  const [openDialog, setOpenDialog] = useState(false);
   const [newCategory, setNewCategory] = useState("");
   const [editCategory, setEditCategory] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [showSkills, setShowSkills] = useState(false);
+  const [showSubcategories, setShowSubcategories] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
-  const [skills, setSkills] = useState([]); // ✅ store skills
+  const [categorySubcategories, setCategorySubcategories] = useState([]);
+  const [loading, setLoading] = useState(false);
 
+  // ✅ Fetch all categories
   const fetchCategories = async () => {
     try {
-      const response = await getAllCategories(authToken);
+      setLoading(true);
+      const response = await getAllCategories(authToken, industryId);
       const data = Array.isArray(response.data)
         ? response.data
         : response.data?.data || [];
       setCategories(data);
     } catch (err) {
       console.error("Error fetching categories:", err);
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
     fetchCategories();
-  }, []);
+  }, [industryId]);
 
-  const handleEdit = async (record) => {
-    try {
-      setLoading(true);
-      const response = await getCategoryById(record.id, authToken);
-      const categoryData = response.data?.data || response.data;
-
-      setEditCategory(categoryData);
-      setNewCategory(categoryData.categoryname || record.categoryname);
-      setOpen(true);
-    } catch (err) {
-      console.error("Error fetching category by ID:", err);
-      setEditCategory(record);
-      setNewCategory(record.categoryname);
-      setOpen(true);
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  // ✅ Save or update category
   const handleSave = async () => {
-    if (!newCategory.trim()) return alert("Category name is required");
+    if (!newCategory.trim()) return alert("Job Role name is required");
 
+    const payload = { categoryname: newCategory, industryId };
     try {
-      const payload = { categoryname: newCategory };
       if (editCategory) {
         await updateCategory(editCategory.id, payload, authToken);
       } else {
         await createCategory(payload, authToken);
       }
-      setOpen(false);
+      setOpenDialog(false);
       setNewCategory("");
       setEditCategory(null);
       fetchCategories();
     } catch (err) {
       console.error("Error saving category:", err);
-      alert("Error saving category. Please try again.");
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this category?"))
-      return;
+  // ✅ Navigate to Subcategories
+  const handleAddSubcategory = async (category) => {
+    setSelectedCategory(category);
     try {
-      await deleteCategory(id, authToken);
-      setCategories((prev) => prev.filter((cat) => cat.id !== id));
-    } catch (err) {
-      console.error("Error deleting category:", err);
-      alert("Error deleting category. Please try again.");
-    }
-  };
-
-  const handleDialogClose = () => {
-    setOpen(false);
-    setNewCategory("");
-    setEditCategory(null);
-  };
-
-  // ✅ Add Skills Button Click
-  const handleAddSkills = async (record) => {
-    try {
-      setLoading(true);
-      const response = await getSkillsByCategory(record.id, authToken);
-      const skillsData = Array.isArray(response.data)
+      const response = await getSubcategoriesByCategory(category.id, authToken);
+      const subcategories = Array.isArray(response.data)
         ? response.data
         : response.data?.data || [];
-      setSkills(skillsData);
-      setSelectedCategory(record);
-      setShowSkills(true);
+      setCategorySubcategories(subcategories);
     } catch (err) {
-      console.error("Error fetching skills:", err);
-      alert("Failed to fetch skills for this category.");
-    } finally {
-      setLoading(false);
+      console.error("Error fetching subcategories:", err);
+      setCategorySubcategories([]);
     }
+    setShowSubcategories(true);
   };
 
-  const handleBackFromSkills = () => {
-    setShowSkills(false);
+  const handleBackFromSubcategories = () => {
+    setShowSubcategories(false);
     setSelectedCategory(null);
-    setSkills([]);
     fetchCategories();
   };
 
+  // ✅ Filter by search
   const filteredCategories = categories.filter(
     (cat) =>
       cat.categoryname &&
       cat.categoryname.toLowerCase().includes(search.toLowerCase())
   );
 
-  // ✅ Show Skills component when Add Skills is clicked
-  if (showSkills && selectedCategory) {
+  // ✅ Show subcategories if toggled
+  if (showSubcategories && selectedCategory) {
     return (
-      <Skills
-        categoryId={selectedCategory.id}
-        categoryName={selectedCategory.categoryname}
-        skills={skills} // ✅ pass skills
-        onBack={handleBackFromSkills}
-      />
+      <Box sx={{ p: 3 }}>
+        <Subcategory
+          categoryId={selectedCategory.id}
+          categoryName={selectedCategory.categoryname}
+          subcategories={categorySubcategories}
+          onBack={handleBackFromSubcategories}
+        />
+      </Box>
     );
   }
 
+  // ✅ Table Columns
   const columns = [
     {
-      title: "ID",
-      dataIndex: "id",
-      key: "id",
+      title: "Sr.No",
+      key: "srno",
       render: (_, __, index) => index + 1,
     },
     {
-      title: "Category",
+      title: "Job Role",
       dataIndex: "categoryname",
       key: "categoryname",
     },
@@ -421,99 +399,148 @@ const Category = ({ onBack }) => {
       title: "Action",
       key: "action",
       render: (_, record) => (
-        <>
-          <Button
-            variant="contained"
-            size="small"
-            sx={{ mr: 1 }}
-            onClick={() => handleEdit(record)}
-            disabled={loading}
-          >
-            Edit
-          </Button>
-          <Button
-            variant="outlined"
-            size="small"
-            sx={{ mr: 1 }}
-            onClick={() => handleAddSkills(record)}
-          >
-            Add Skills
-          </Button>
-        </>
+        <Button
+          variant="contained"
+          size="small"
+          sx={{
+            backgroundColor: "#f57c00",
+            "&:hover": { backgroundColor: "#ef6c00" },
+            textTransform: "none",
+          }}
+          onClick={() => handleAddSubcategory(record)}
+        >
+          Add Subcategory
+        </Button>
       ),
     },
   ];
 
   return (
     <Box sx={{ p: 3 }}>
-      <Box sx={{ mb: 2 }}>
-        <Button
-          variant="outlined"
-          startIcon={<ArrowBackIcon />}
-          onClick={onBack}
-        >
-          Back
-        </Button>
-      </Box>
+      {/* Back Button */}
+      <Button
+        variant="outlined"
+        startIcon={<ArrowBackIcon />}
+        onClick={onBack}
+        sx={{
+          mb: 3,
+          textTransform: "none",
+          borderColor: "#1976d2",
+          color: "#1976d2",
+          "&:hover": {
+            borderColor: "#1565c0",
+            bgcolor: "#e3f2fd",
+          },
+        }}
+      >
+        Back
+      </Button>
 
+      {/* Header Section */}
       <Box
         sx={{
           display: "flex",
-          justifyContent: "space-between",
           alignItems: "center",
+          justifyContent: "space-between",
           mb: 2,
+          gap: 2,
         }}
       >
         <TextField
-          placeholder="Search Category"
+          placeholder="Search Job Role"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           size="small"
           sx={{ width: 250 }}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <SearchIcon sx={{ color: "#999" }} />
+              </InputAdornment>
+            ),
+          }}
         />
 
         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
           <Button
             variant="contained"
-            onClick={() => setOpen(true)}
-            sx={{ minWidth: 140, height: 36 }}
+            sx={{
+              backgroundColor: "#1976d2",
+              "&:hover": { backgroundColor: "#1565c0" },
+              textTransform: "none",
+            }}
+            onClick={() => {
+              setOpenDialog(true);
+              setEditCategory(null);
+              setNewCategory("");
+            }}
           >
-            Add Category
+            Add Job Role
           </Button>
-          <Box sx={{ fontWeight: "bold" }}>
-            Total: {filteredCategories.length}
-          </Box>
+
+          <Chip
+            label={`Total: ${filteredCategories.length}`}
+            sx={{
+              border: "1px solid #1976D2",
+              backgroundColor: "transparent",
+              fontWeight: "bold",
+              color: "#1976D2",
+              ml: 2,
+            }}
+            variant="outlined"
+          />
         </Box>
       </Box>
 
+      {/* Table */}
       <Table
+        className="table-root"
         columns={columns}
         dataSource={filteredCategories}
         rowKey="id"
         bordered
-        pagination={{ pageSize: 5 }}
-        locale={{ emptyText: "No categories found" }}
         loading={loading}
+        pagination={{
+          pageSize: 10,
+          showSizeChanger: true,
+          pageSizeOptions: ["10", "25", "50", "100"],
+          showTotal: (total, range) =>
+            `${range[0]}-${range[1]} of ${total} job roles`,
+        }}
+        locale={{ emptyText: "No job roles found" }}
       />
 
-      <Dialog open={open} onClose={handleDialogClose}>
+      {/* Dialog */}
+      <Dialog
+        open={openDialog}
+        onClose={() => setOpenDialog(false)}
+        fullWidth
+        maxWidth="sm"
+      >
         <DialogTitle>
-          {editCategory ? "Edit Category" : "Add Category"}
+          {editCategory ? "Edit Job Role" : "Add Job Role"}
         </DialogTitle>
-        <DialogContent>
+        <DialogContent className="textField-root">
           <TextField
-            label="Category Name"
+            label="Job Role Name"
             fullWidth
             value={newCategory}
             onChange={(e) => setNewCategory(e.target.value)}
             sx={{ mt: 2 }}
-            autoFocus
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleDialogClose}>Cancel</Button>
-          <Button variant="contained" onClick={handleSave}>
-            Save
+          <Button onClick={() => setOpenDialog(false)}>Cancel</Button>
+          <Button
+            variant="contained"
+            sx={{
+              backgroundColor: "#1976d2",
+              "&:hover": { backgroundColor: "#1565c0" },
+              textTransform: "none",
+            }}
+            onClick={handleSave}
+          >
+            {editCategory ? "Update" : "Save"}
           </Button>
         </DialogActions>
       </Dialog>

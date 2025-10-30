@@ -8,12 +8,16 @@ import {
   Chip,
   Stack,
   Dialog,
-  DialogTitle,
   DialogContent,
   DialogActions,
+  Typography,
+  IconButton
 } from "@mui/material";
 import { Table, Tag } from "antd";
 import Swal from "sweetalert2";
+import "../Common/Design.css";
+import CloseIcon from "@mui/icons-material/Close";
+
 import { createPlan, getAllPlans, updatePlan } from "./CreatePlans";
 
 const statusOptions = [
@@ -46,10 +50,9 @@ function CreatePlan() {
 
   const fetchPlans = async () => {
     try {
-      const res = await getAllPlans(authToken);
-
-      // Updated to match your API response structure
-      const dataArray = Array.isArray(res.data?.plans) ? res.data.plans : [];
+      // Use res.plans instead of res.data.plans
+      const res = await getAllPlans(); 
+      const dataArray = Array.isArray(res.plans) ? res.plans : [];
 
       const formatted = dataArray.map((p) => ({
         ...p,
@@ -76,22 +79,24 @@ function CreatePlan() {
       setFormData({ ...formData, [name]: value });
     }
   };
+  const handleClose = () => setOpen(false);
+
 
   const addFeature = () => {
-    const v = formData.featuresInput?.trim();
-    if (v && !formData.features.includes(v)) {
+    const feature = formData.featuresInput?.trim();
+    if (feature && !formData.features.includes(feature)) {
       setFormData((prev) => ({
         ...prev,
-        features: [...prev.features, v],
+        features: [...prev.features, feature],
         featuresInput: "",
       }));
     }
   };
 
-  const removeFeature = (f) => {
+  const removeFeature = (feature) => {
     setFormData((prev) => ({
       ...prev,
-      features: prev.features.filter((x) => x !== f),
+      features: prev.features.filter((f) => f !== feature),
     }));
   };
 
@@ -106,14 +111,20 @@ function CreatePlan() {
       setLoading(true);
       const payload = {
         name: formData.name,
-        durationInMonths: formData.durationInMonths ? Number(formData.durationInMonths) : null,
-        jobPostLimit: formData.jobPostLimit ? Number(formData.jobPostLimit) : null,
+        durationInMonths: formData.durationInMonths
+          ? Number(formData.durationInMonths)
+          : null,
+        jobPostLimit: formData.jobPostLimit
+          ? Number(formData.jobPostLimit)
+          : null,
         price: formData.price ? Number(formData.price) : null,
         features: formData.features,
-        discountPercentage: formData.discountPercentage ? Number(formData.discountPercentage) : null,
+        discountPercentage: formData.discountPercentage
+          ? Number(formData.discountPercentage)
+          : null,
         isActive: formData.isActive,
         planType: formData.planType,
-        createdByEmail: createdByEmail,
+        createdByEmail,
       };
 
       if (editMode && selectedPlanId) {
@@ -169,7 +180,7 @@ function CreatePlan() {
       title: "Duration",
       dataIndex: "durationInMonths",
       key: "durationInMonths",
-      render: (v) => (v ? `${v} months` : "-"),
+      render: (v) => (v ? `${v} Months` : "-"),
     },
     {
       title: "Job Limit",
@@ -181,7 +192,8 @@ function CreatePlan() {
       title: "Price",
       dataIndex: "price",
       key: "price",
-      render: (v) => (v !== null && v !== undefined ? `₹${v.toLocaleString()}` : "Free"),
+      render: (v) =>
+        v !== null && v !== undefined ? `₹${v.toLocaleString()}` : "Free",
     },
     {
       title: "Discount",
@@ -201,14 +213,16 @@ function CreatePlan() {
             </Tag>
           ))
         ) : (
-          <span>-</span>
+          <span style={{ color: "#aaa" }}>No features added</span>
         ),
     },
     {
       title: "Status",
       dataIndex: "isActive",
       key: "isActive",
-      render: (v) => <Tag color={v ? "green" : "red"}>{v ? "Active" : "Inactive"}</Tag>,
+      render: (v) => (
+        <Tag color={v ? "green" : "red"}>{v ? "Active" : "Inactive"}</Tag>
+      ),
     },
     {
       title: "Created At",
@@ -233,30 +247,92 @@ function CreatePlan() {
         Create Plan
       </Button>
 
-      <Table columns={columns} dataSource={plans} bordered pagination={{ pageSize: 5 }} />
+      <Table
+        className="table-root"
+        columns={columns}
+        dataSource={plans}
+        bordered
+        pagination={{ pageSize: 5 }}
+      />
 
-      <Dialog open={open} onClose={() => setOpen(false)} maxWidth="md">
-        <DialogTitle>{editMode ? "Edit Plan" : "Create Plan"}</DialogTitle>
+
+      <Dialog open={open} onClose={() => setOpen(false)} maxWidth="md" fullWidth>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            backgroundColor: "#1976d2",
+            color: "#fff",
+            px: 3,
+            py: 1,
+            borderTopLeftRadius: "8px",
+            borderTopRightRadius: "8px",
+          }}
+        >
+          <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+            {editMode ? "Update Manager" : "Create Plans"}
+          </Typography>
+
+          <IconButton onClick={handleClose} sx={{ color: "#fff" }}>
+            <CloseIcon />
+          </IconButton>
+        </Box>
         <DialogContent dividers>
           <form onSubmit={handleSubmit}>
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={6} md={4}>
-                <TextField label="Plan Name" name="name" fullWidth required value={formData.name} onChange={handleChange} />
+            <Grid container spacing={2} className="textField-root">
+              <Grid item xs={12} sm={6} md={4} >
+                <TextField
+                  label="Plan Name"
+                  name="name"
+                  fullWidth
+                  required
+                  value={formData.name}
+                  onChange={handleChange}
+                />
               </Grid>
               <Grid item xs={12} sm={6} md={4}>
-                <TextField label="Duration (months)" name="durationInMonths" type="number" fullWidth value={formData.durationInMonths} onChange={handleChange} />
+                <TextField
+                  label="Duration (Months)"
+                  name="durationInMonths"
+                  type="number"
+                  fullWidth
+                  value={formData.durationInMonths}
+                  onChange={handleChange}
+                />
               </Grid>
               <Grid item xs={12} sm={6} md={4}>
-                <TextField label="Job Post Limit" name="jobPostLimit" type="number" fullWidth value={formData.jobPostLimit} onChange={handleChange} />
+                <TextField
+                  label="Job Post Limit"
+                  name="jobPostLimit"
+                  type="number"
+                  fullWidth
+                  value={formData.jobPostLimit}
+                  onChange={handleChange}
+                />
               </Grid>
               <Grid item xs={12} sm={6} md={4}>
-                <TextField label="Price" name="price" type="number" fullWidth value={formData.price} onChange={handleChange} />
+                <TextField
+                  label="Price"
+                  name="price"
+                  type="number"
+                  fullWidth
+                  value={formData.price}
+                  onChange={handleChange}
+                />
               </Grid>
               <Grid item xs={12} sm={6} md={4}>
-                <TextField label="Discount (%)" name="discountPercentage" type="number" fullWidth value={formData.discountPercentage} onChange={handleChange} />
+                <TextField
+                  label="Discount (%)"
+                  name="discountPercentage"
+                  type="number"
+                  fullWidth
+                  value={formData.discountPercentage}
+                  onChange={handleChange}
+                />
               </Grid>
 
-              <Grid item xs={12} sm={8}>
+              <Grid item xs={12} sm={9}>
                 <TextField
                   label="Add Feature"
                   name="featuresInput"
@@ -271,16 +347,40 @@ function CreatePlan() {
                   }}
                 />
               </Grid>
+              <Grid item xs={12} sm={3}>
+                <Button
+                  onClick={addFeature}
+                  variant="contained"
+                  fullWidth
+                  sx={{ height: "60%" }}
+                >
+                  Add Feature
+                </Button>
+              </Grid>
+
               <Grid item xs={12}>
                 <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap" }}>
                   {formData.features.map((f) => (
-                    <Chip key={f} label={f} onDelete={() => removeFeature(f)} sx={{ m: 0.5 }} />
+                    <Chip
+                      key={f}
+                      label={f}
+                      onDelete={() => removeFeature(f)}
+                      color="primary"
+                      sx={{ m: 0.5 }}
+                    />
                   ))}
                 </Stack>
               </Grid>
 
               <Grid item xs={12} sm={6} md={4}>
-                <TextField select label="Status" name="isActive" fullWidth value={formData.isActive} onChange={handleChange}>
+                <TextField
+                  select
+                  label="Status"
+                  name="isActive"
+                  fullWidth
+                  value={formData.isActive}
+                  onChange={handleChange}
+                >
                   {statusOptions.map((opt) => (
                     <MenuItem key={opt.value} value={opt.value.toString()}>
                       {opt.label}
@@ -301,8 +401,19 @@ function CreatePlan() {
               >
                 Cancel
               </Button>
-              <Button type="submit" variant="contained" color="primary" disabled={loading}>
-                {loading ? (editMode ? "Updating..." : "Creating...") : editMode ? "Update" : "Submit"}
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                disabled={loading}
+              >
+                {loading
+                  ? editMode
+                    ? "Updating..."
+                    : "Creating..."
+                  : editMode
+                    ? "Update"
+                    : "Submit"}
               </Button>
             </DialogActions>
           </form>

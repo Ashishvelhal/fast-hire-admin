@@ -8,11 +8,15 @@ import {
 } from "@mui/icons-material";
 import LoadingOverlay from "../Common/LoadingOverlay";
 import Industry from "./Industry.jsx";
+import Education from "./Education.jsx";
+import Company from "./Company.jsx";
 
 const Location = lazy(() => import("./Location.jsx"));
 const menuItems = [
   { id: "Location", label: " Location", icon: <SourceIcon /> },
   { id: "Industry", label: "Industry", icon: <CourseIcon /> },
+  { id: "Education", label: "Education", icon: <AddLocationIcon /> },
+  { id: "Company", label: "Company", icon: <CategoryIcon /> }
 
 ];
 const Sidebar = ({ selectedComponent, onSelect }) => {
@@ -29,7 +33,7 @@ const Sidebar = ({ selectedComponent, onSelect }) => {
         borderRadius: 8,
         backgroundColor: "#2980B9",
         transition: "width 0.3s ease",
-        height: "30%",
+        height: "40%",
         overflowY: "hidden",
         border: "1px solid black"
       }}
@@ -75,17 +79,18 @@ const Sidebar = ({ selectedComponent, onSelect }) => {
 
 const Setting = () => {
   const [selectedComponent, setSelectedComponent] = useState("Location");
-
   const renderSelectedComponent = () => {
     const components = {
       Location: <Location />,
       Industry: <Industry />,
+      Education: <Education />,
+      Company: <Company />
     };
     return components[selectedComponent] || null;
   };
 
   return (
-    <Box sx={{ display: "flex", padding: 2, height: "80%" }}>
+    <Box sx={{ display: "flex", padding: 2, height: "100%" }}>
       <Sidebar
         selectedComponent={selectedComponent}
         onSelect={setSelectedComponent}
@@ -97,8 +102,7 @@ const Setting = () => {
           marginLeft: 2,
           border: "1px solid black",
           borderRadius: 2,
-          // backgroundColor: "#f9f9f9",
-          position: "relative",
+          position: "relative", 
         }}
       >
         <Suspense fallback={<LoadingOverlay loading={true} />}>

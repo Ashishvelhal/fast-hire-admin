@@ -1,14 +1,16 @@
+
 import React, { useEffect, useState } from "react";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
 import { Box, Button, Stack, Paper } from "@mui/material";
 import LoadingOverlay from "../Common/LoadingOverlay"; // Make sure path is correct
 
 const navItems = [
-  { label: "Create Plans", to: "/admin/fasthireadminlayout/plans" },
-  { label: "View Plans", to: "/admin/fasthireadminlayout/viewplans" }
+  { label: "Create Manager", to: "/admin/fasthireadminlayout/manager" },
+  { label: "Manager List", to: "/admin/fasthireadminlayout/managerlist" }
 ];
 
-const MiniSidebar = () => {
+
+const ManagerSidebar = () => {
   const location = useLocation();
   const [loading, setLoading] = useState(false);
 
@@ -21,8 +23,8 @@ const MiniSidebar = () => {
       role === "superAdmin" &&
       (
 
-        item.label === "Create Plans" ||
-        item.label === "View Plans"
+        item.label === "Create Manager" ||
+        item.label === "Manager List"
       )
     ) {
       return false;
@@ -99,4 +101,5 @@ const MiniSidebar = () => {
     </Box>
   );
 };
-export default MiniSidebar;
+
+export default ManagerSidebar;
