@@ -26,7 +26,6 @@ export const getSubcategoriesByCategory = async (categoryId, token) => {
   }
 };
 
-// Get skills by subcategory ID
 export const getSkillsBySubCategory = async (subCategoryId, token) => {
   try {
     const response = await axiosInstance.get(`/getSkillsBySubCategory/${subCategoryId}`, {

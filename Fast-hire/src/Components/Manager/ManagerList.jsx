@@ -9,11 +9,13 @@ import {
   TextField,
   Grid,
   Typography,
-  Chip
+  Chip,
 } from "@mui/material";
 import { Table, message } from "antd";
 import CloseIcon from "@mui/icons-material/Close";
 import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+import Swal from "sweetalert2";
 import { getAllManagers, updateManager, deleteManager } from "./CreateManager";
 
 const ManagerList = () => {
@@ -45,10 +47,21 @@ const ManagerList = () => {
   const handleDelete = async (id) => {
     const authToken = sessionStorage.getItem("authToken");
     if (!authToken) return message.error("Please login first.");
+    const confirm = await Swal.fire({
+      title: "Are you sure?",
+      text: "This action will permanently delete the manager.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete it!",
+    });
+    if (!confirm.isConfirmed) return;
     try {
       await deleteManager(id, authToken);
-      message.success("Manager deleted!");
+      message.success("Manager deleted successfully!");
       fetchManagers();
+      handleCloseDialog();
     } catch (err) {
       message.error("Delete failed.");
     }
@@ -98,9 +111,7 @@ const ManagerList = () => {
           sx={{
             color: "primary.main",
             cursor: "pointer",
-            "&:hover": {
-              color: "primary.dark",
-            },
+            "&:hover": { color: "primary.dark" },
           }}
           onClick={() => handleOpenDialog(record)}
         >
@@ -114,27 +125,13 @@ const ManagerList = () => {
     { title: "State", dataIndex: "state", key: "state" },
     { title: "District", dataIndex: "district", key: "district", render: (d) => d || "-" },
     { title: "Status", dataIndex: "status", key: "status" },
-    {
-      title: "Action",
-      key: "action",
-      render: (_, record) => (
-        <Button
-          size="small"
-          color="error"
-          variant="outlined"
-          onClick={() => handleDelete(record.id)}
-        >
-          Delete
-        </Button>
-      ),
-    },
   ];
 
   return (
     <Box p={3}>
       <Box sx={{ display: "flex", justifyContent: "flex-start" }}>
         <Chip
-          label={`Total  : ${managers.length}`}
+          label={`Total : ${managers.length}`}
           sx={{
             border: "1px solid #1976D2",
             backgroundColor: "transparent",
@@ -145,6 +142,7 @@ const ManagerList = () => {
           variant="outlined"
         />
       </Box>
+
       <Table
         className="table-root"
         columns={columns}
@@ -152,25 +150,38 @@ const ManagerList = () => {
         rowKey="id"
         loading={loading}
         pagination={{
-          pageSize: 10,
+          pageSize: 25,
           showSizeChanger: true,
-          pageSizeOptions: ['10', '25', '50', '100'],
+          pageSizeOptions: ["25", "50", "100", "200"],
           showTotal: (total, range) =>
             `${range[0]}-${range[1]} of ${total} managers`,
         }}
-        locale={{ emptyText: 'No managers found' }}
+        locale={{ emptyText: "No managers found" }}
       />
+
       {openDialog && selectedManager && (
-        <Dialog
-          open={openDialog}
-          onClose={handleCloseDialog}
-          maxWidth="sm"
-          fullWidth
-        >
-          <DialogTitle>
-            <Box display="flex" justifyContent="space-between" alignItems="center">
-              <Typography variant="h6">Manager Details</Typography>
-              <Box display="flex" gap={1}>
+        <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
+          <DialogTitle sx={{ p: 0 }}>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                backgroundColor: "#1976d2",
+                color: "#fff",
+                px: 3,
+                py: 1,
+                borderTopLeftRadius: "8px",
+                borderTopRightRadius: "8px",
+              }}
+            >
+              {/* Title */}
+              <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                {editMode ? "Edit Manager" : "Manager Details"}
+              </Typography>
+
+              {/* Action Icons */}
+              <Box display="flex" alignItems="center">
                 {editMode ? (
                   <>
                     <Button
@@ -178,6 +189,12 @@ const ManagerList = () => {
                       size="small"
                       onClick={handleUpdateManager}
                       disabled={saving}
+                      sx={{
+                        mr: 1,
+                        backgroundColor: "#fff",
+                        color: "#1976d2",
+                        "&:hover": { backgroundColor: "#e3f2fd" },
+                      }}
                     >
                       {saving ? "Saving..." : "Update"}
                     </Button>
@@ -185,16 +202,30 @@ const ManagerList = () => {
                       variant="outlined"
                       size="small"
                       onClick={() => setEditMode(false)}
+                      sx={{
+                        mr: 1,
+                        color: "#fff",
+                        borderColor: "#fff",
+                        "&:hover": { backgroundColor: "rgba(255,255,255,0.2)" },
+                      }}
                     >
                       Cancel
                     </Button>
                   </>
                 ) : (
-                  <IconButton color="primary" onClick={() => setEditMode(true)}>
-                    <EditIcon />
-                  </IconButton>
+                  <>
+                    <IconButton sx={{ color: "#fff" }} onClick={() => setEditMode(true)}>
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton
+                      sx={{ color: "#fff" }}
+                      onClick={() => handleDelete(selectedManager.id)}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </>
                 )}
-                <IconButton onClick={handleCloseDialog}>
+                <IconButton onClick={handleCloseDialog} sx={{ color: "#fff" }}>
                   <CloseIcon />
                 </IconButton>
               </Box>
@@ -225,7 +256,7 @@ const ManagerList = () => {
                   ) : (
                     <Box display="flex" gap={1}>
                       <Typography fontWeight="bold">{label}:</Typography>
-                      <Typography>{selectedManager[name]}</Typography>
+                      <Typography>{selectedManager[name] || "-"}</Typography>
                     </Box>
                   )}
                 </Grid>

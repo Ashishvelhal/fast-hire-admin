@@ -91,7 +91,6 @@ const MiniSidebar = () => {
           })}
         </Stack>
       </Paper>
-
       <Box sx={{ position: "relative" }}>
         <LoadingOverlay loading={loading} />
         <Outlet />

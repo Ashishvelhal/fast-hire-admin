@@ -10,13 +10,16 @@ import LoadingOverlay from "../Common/LoadingOverlay";
 import Industry from "./Industry.jsx";
 import Education from "./Education.jsx";
 import Company from "./Company.jsx";
+import Courses from "./Courses.jsx";
 
 const Location = lazy(() => import("./Location.jsx"));
 const menuItems = [
   { id: "Location", label: " Location", icon: <SourceIcon /> },
   { id: "Industry", label: "Industry", icon: <CourseIcon /> },
   { id: "Education", label: "Education", icon: <AddLocationIcon /> },
-  { id: "Company", label: "Company", icon: <CategoryIcon /> }
+  { id: "Company", label: "Company", icon: <CategoryIcon /> },
+  { id: "Courses", label: "Courses", icon: <CategoryIcon /> }
+
 
 ];
 const Sidebar = ({ selectedComponent, onSelect }) => {
@@ -84,7 +87,9 @@ const Setting = () => {
       Location: <Location />,
       Industry: <Industry />,
       Education: <Education />,
-      Company: <Company />
+      Company: <Company />,
+      Courses: <Courses />
+
     };
     return components[selectedComponent] || null;
   };
@@ -102,7 +107,7 @@ const Setting = () => {
           marginLeft: 2,
           border: "1px solid black",
           borderRadius: 2,
-          position: "relative", 
+          position: "relative",
         }}
       >
         <Suspense fallback={<LoadingOverlay loading={true} />}>

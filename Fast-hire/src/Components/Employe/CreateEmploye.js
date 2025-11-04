@@ -50,6 +50,7 @@ export const deleteEmployer = (id, token) => {
     },
   });
 };
+
 export const getEmployerPlans = (employerId, token) => {
   return axiosInstance.get(`/${employerId}/plans`, {
     headers: {
@@ -57,14 +58,5 @@ export const getEmployerPlans = (employerId, token) => {
     },
   });
 };
-export const getAllIndustries = async (token) => {
-  return axiosInstance.get("/getAllIndustries", {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-};
 
-export const getAllCompanies = async (token) => {
-  return axiosInstance.get("/getAllCompanies", {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-};
+

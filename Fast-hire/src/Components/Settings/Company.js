@@ -1,6 +1,5 @@
 import axiosInstance from "../Common/axiosConfig";
 
-// ✅ CREATE Company (with logo upload)
 export const createCompany = async (company, token) => {
   const formData = new FormData();
   formData.append("company", JSON.stringify(company));
@@ -14,14 +13,10 @@ export const createCompany = async (company, token) => {
   });
 };
 
-// ✅ GET all Companies
-export const getAllCompanies = async (token) => {
-  return axiosInstance.get("/getAllCompanies", {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+export const getAllCompanies = async () => {
+  return axiosInstance.get("/getAllCompanies");
 };
 
-// ✅ GET Company by ID
 export const getCompanyById = async (id, token) => {
   return axiosInstance.get(`/getCompanyById?id=${id}`, {
     headers: { Authorization: `Bearer ${token}` },

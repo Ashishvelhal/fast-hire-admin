@@ -42,7 +42,7 @@ export const NAVIGATION = [
     icon: <ContactPageIcon />,
     description: "Marketing Management",
     system: "Marketing Management System",
-    roles: ["SUPERADMIN","MANAGER"],
+    roles: ["SUPERADMIN", "MANAGER"],
   },
   {
     title: "Job Post",
@@ -101,7 +101,7 @@ export const NAVIGATION = [
     system: "Registration Management Software",
     roles: ["SUPERADMIN", "MANAGER"],
   },
-    {
+  {
     title: "Plan Leads",
     segment: "/admin/fasthireadminlayout/leads",
     icon: <LeaderboardIcon />,
@@ -109,7 +109,7 @@ export const NAVIGATION = [
     system: "Registration Management Software",
     roles: ["SUPERADMIN", "MANAGER"],
   },
-      {
+  {
     title: "Degree Leads",
     segment: "/admin/fasthireadminlayout/degreeleads",
     icon: <Rotate90DegreesCwIcon />,
@@ -117,7 +117,7 @@ export const NAVIGATION = [
     system: "Registration Management Software",
     roles: ["SUPERADMIN", "MANAGER"],
   },
-        {
+  {
     title: "Degree Setting",
     segment: "/admin/fasthireadminlayout/degreesetting",
     icon: <ContactPageIcon />,
@@ -156,8 +156,13 @@ export const NAVIGATION = [
         segment: "/admin/fasthireadminlayout/settings/company",
         icon: <WorkOutlineIcon />,
         roles: ["SUPERADMIN"],
+      },
+      {
+        title: "Courses",
+        segment: "/admin/fasthireadminlayout/settings/courses",
+        icon: <WorkOutlineIcon />,
+        roles: ["SUPERADMIN"],
       }
     ]
   }
-
 ];

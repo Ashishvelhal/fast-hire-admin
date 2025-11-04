@@ -42,7 +42,7 @@ const Education = () => {
 
             console.log('Processed Data:', data);
 
-            setEducations(data); // ✅ Set fetched data to state
+            setEducations(data); 
         } catch (err) {
             console.error("Error fetching educations:", err);
         }

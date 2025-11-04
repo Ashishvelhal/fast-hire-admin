@@ -11,14 +11,15 @@ import {
   DialogContent,
   DialogActions,
   Typography,
-  IconButton
+  IconButton,
 } from "@mui/material";
 import { Table, Tag } from "antd";
 import Swal from "sweetalert2";
 import "../Common/Design.css";
 import CloseIcon from "@mui/icons-material/Close";
-
-import { createPlan, getAllPlans, updatePlan } from "./CreatePlans";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
+import { createPlan, getAllPlans, updatePlan, deletePlan } from "./CreatePlans";
 
 const statusOptions = [
   { value: true, label: "Active" },
@@ -50,16 +51,13 @@ function CreatePlan() {
 
   const fetchPlans = async () => {
     try {
-      // Use res.plans instead of res.data.plans
-      const res = await getAllPlans(); 
+      const res = await getAllPlans();
       const dataArray = Array.isArray(res.plans) ? res.plans : [];
-
       const formatted = dataArray.map((p) => ({
         ...p,
         key: p.id,
         features: Array.isArray(p.features) ? p.features : [],
       }));
-
       setPlans(formatted);
     } catch (error) {
       console.error("Error fetching plans:", error);
@@ -79,8 +77,12 @@ function CreatePlan() {
       setFormData({ ...formData, [name]: value });
     }
   };
-  const handleClose = () => setOpen(false);
 
+  const handleClose = () => {
+    setOpen(false);
+    setFormData(initialForm);
+    setEditMode(false);
+  };
 
   const addFeature = () => {
     const feature = formData.featuresInput?.trim();
@@ -159,6 +161,35 @@ function CreatePlan() {
     setOpen(true);
   };
 
+  const handleDelete = async () => {
+    if (!selectedPlanId) return;
+
+    Swal.fire({
+      title: "Are you sure?",
+      text: "This plan will be permanently deleted!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#1976d2",
+      confirmButtonText: "Yes, delete it!",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          setLoading(true);
+          await deletePlan(selectedPlanId, authToken);
+          Swal.fire("Deleted!", "Plan deleted successfully!", "success");
+          fetchPlans();
+          handleClose();
+        } catch (error) {
+          console.error("Error deleting plan:", error);
+          Swal.fire("Error", "Failed to delete plan.", "error");
+        } finally {
+          setLoading(false);
+        }
+      }
+    });
+  };
+
   const columns = [
     {
       title: "Sr.No",
@@ -224,12 +255,6 @@ function CreatePlan() {
         <Tag color={v ? "green" : "red"}>{v ? "Active" : "Inactive"}</Tag>
       ),
     },
-    {
-      title: "Created At",
-      dataIndex: "createdAt",
-      key: "createdAt",
-      render: (v) => (v ? new Date(v).toLocaleDateString() : "-"),
-    },
   ];
 
   return (
@@ -246,17 +271,23 @@ function CreatePlan() {
       >
         Create Plan
       </Button>
-
       <Table
         className="table-root"
         columns={columns}
         dataSource={plans}
+        rowKey="id"
+        loading={loading}
         bordered
-        pagination={{ pageSize: 5 }}
+        pagination={{
+          pageSize: 25,
+          showSizeChanger: true,
+          pageSizeOptions: ["25", "50", "100", "200"],
+          showTotal: (total, range) =>
+            `${range[0]}-${range[1]} of ${total} plans`,
+        }}
+        locale={{ emptyText: "No plans found" }}
       />
-
-
-      <Dialog open={open} onClose={() => setOpen(false)} maxWidth="md" fullWidth>
+      <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
         <Box
           sx={{
             display: "flex",
@@ -271,17 +302,24 @@ function CreatePlan() {
           }}
         >
           <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-            {editMode ? "Update Manager" : "Create Plans"}
+            {editMode ? "Edit Plan" : "Create Plan"}
           </Typography>
-
-          <IconButton onClick={handleClose} sx={{ color: "#fff" }}>
-            <CloseIcon />
-          </IconButton>
+          <Box>
+            {editMode && (
+              <IconButton sx={{ color: "#fff" }} onClick={handleDelete}>
+                <DeleteIcon />
+              </IconButton>
+            )}
+            <IconButton sx={{ color: "#fff" }} onClick={handleClose}>
+              <CloseIcon />
+            </IconButton>
+          </Box>
         </Box>
+
         <DialogContent dividers>
           <form onSubmit={handleSubmit}>
             <Grid container spacing={2} className="textField-root">
-              <Grid item xs={12} sm={6} md={4} >
+              <Grid item xs={12} sm={6} md={4}>
                 <TextField
                   label="Plan Name"
                   name="name"
@@ -291,6 +329,7 @@ function CreatePlan() {
                   onChange={handleChange}
                 />
               </Grid>
+
               <Grid item xs={12} sm={6} md={4}>
                 <TextField
                   label="Duration (Months)"
@@ -301,6 +340,7 @@ function CreatePlan() {
                   onChange={handleChange}
                 />
               </Grid>
+
               <Grid item xs={12} sm={6} md={4}>
                 <TextField
                   label="Job Post Limit"
@@ -311,6 +351,7 @@ function CreatePlan() {
                   onChange={handleChange}
                 />
               </Grid>
+
               <Grid item xs={12} sm={6} md={4}>
                 <TextField
                   label="Price"
@@ -321,6 +362,7 @@ function CreatePlan() {
                   onChange={handleChange}
                 />
               </Grid>
+
               <Grid item xs={12} sm={6} md={4}>
                 <TextField
                   label="Discount (%)"
@@ -390,15 +432,8 @@ function CreatePlan() {
               </Grid>
             </Grid>
 
-            <DialogActions sx={{ mt: 2 }}>
-              <Button
-                onClick={() => {
-                  setOpen(false);
-                  setEditMode(false);
-                  setFormData(initialForm);
-                }}
-                color="secondary"
-              >
+            <DialogActions sx={{ mt: 2, justifyContent: "flex-end" }}>
+              <Button onClick={handleClose} color="secondary" variant="outlined">
                 Cancel
               </Button>
               <Button
@@ -412,8 +447,8 @@ function CreatePlan() {
                     ? "Updating..."
                     : "Creating..."
                   : editMode
-                    ? "Update"
-                    : "Submit"}
+                  ? "Update"
+                  : "Create"}
               </Button>
             </DialogActions>
           </form>
