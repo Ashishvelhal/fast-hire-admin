@@ -28,6 +28,14 @@ export const NAVIGATION = [
     system: "Marketing Management System",
     roles: ["SUPERADMIN", "MANAGER"],
   },
+    {
+    title: "Billing",
+    segment: "/admin/fasthireadminlayout/billing",
+    icon: <PaymentsIcon />,
+    description: "Manage Registration",
+    system: "Registration Management Software",
+    roles: ["SUPERADMIN", "MANAGER"],
+  },
   {
     title: "Manager",
     segment: "/admin/fasthireadminlayout/manager",
@@ -85,14 +93,7 @@ export const NAVIGATION = [
   //   system: "Registration Management Software",
   //   roles: ["SUPERADMIN", "MANAGER"],
   // },
-  // {
-  //   title: "Billing",
-  //   segment: "/admin/fasthireadminlayout/billing",
-  //   icon: <PaymentsIcon />,
-  //   description: "Manage Registration",
-  //   system: "Registration Management Software",
-  //   roles: ["SUPERADMIN", "MANAGER"],
-  // },
+
   {
     title: "Contact Us",
     segment: "/admin/fasthireadminlayout/contactus",

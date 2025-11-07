@@ -1,57 +1,53 @@
 import React, { useEffect, useState } from "react";
 import {
+  Box,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  Button,
+  IconButton,
+  TextField,
+  Grid,
+  Typography,
+  Chip,
+} from "@mui/material";
+import { Table, message } from "antd";
+import CloseIcon from "@mui/icons-material/Close";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+import AddIcon from "@mui/icons-material/Add";
+import Swal from "sweetalert2";
+import {
   createCompany,
   getAllCompanies,
   updateCompany,
   deleteCompany,
 } from "./Company";
-import {
-  Box,
-  Button,
-  TextField,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Grid,
-  Chip,
-} from "@mui/material";
-import { Table, message, Popconfirm } from "antd";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
-import AddIcon from "@mui/icons-material/Add";
 import "../Common/Design.css";
 
 const Company = () => {
-  const authToken = sessionStorage.getItem("authToken");
   const [companies, setCompanies] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [selectedCompany, setSelectedCompany] = useState(null);
+  const [editMode, setEditMode] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [search, setSearch] = useState("");
-  const [open, setOpen] = useState(false);
-  const [editCompany, setEditCompany] = useState(null);
-  const [newCompany, setNewCompany] = useState({
-    companyName: "",
-    industry: "",
-    location: "",
-    description: "",
-    perks: "",
-    employeeSize: "",
-    foundedYear: "",
-    rating: "",
-    reviewCount: "",
-    availableJobs: "",
-    logoUrl: "",
-  });
+
+  const authToken = sessionStorage.getItem("authToken");
 
   const fetchCompanies = async () => {
     try {
-      const response = await getAllCompanies(); // removed authToken
-      const data = Array.isArray(response.data)
-        ? response.data
-        : response.data?.data || [];
+      setLoading(true);
+      const res = await getAllCompanies();
+      const data = Array.isArray(res.data)
+        ? res.data
+        : res.data?.data || [];
       setCompanies(data);
     } catch (err) {
-      console.error("Error fetching companies:", err);
-      message.error("Failed to fetch companies");
+      message.error("Failed to load companies.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -59,9 +55,39 @@ const Company = () => {
     fetchCompanies();
   }, []);
 
-  // Reset form
-  const resetForm = () => {
-    setNewCompany({
+  const handleOpenDialog = (company) => {
+    setSelectedCompany({ ...company });
+    setOpenDialog(true);
+    setEditMode(false);
+  };
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+    setSelectedCompany(null);
+    setEditMode(false);
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setSelectedCompany((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleUpdateCompany = async () => {
+    try {
+      setSaving(true);
+      await updateCompany(selectedCompany.id, selectedCompany, authToken);
+      message.success("Company updated successfully!");
+      fetchCompanies();
+      handleCloseDialog();
+    } catch (err) {
+      message.error("Update failed.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleAddCompany = () => {
+    setSelectedCompany({
       companyName: "",
       industry: "",
       location: "",
@@ -74,44 +100,44 @@ const Company = () => {
       availableJobs: "",
       logoUrl: "",
     });
-    setEditCompany(null);
+    setEditMode(true);
+    setOpenDialog(true);
   };
 
-  const handleSave = async () => {
-    if (!newCompany.companyName.trim())
-      return message.warning("Company name is required");
-
+  const handleSaveNew = async () => {
+    if (!selectedCompany.companyName.trim())
+      return message.warning("Company name is required.");
     try {
-      if (editCompany) {
-        await updateCompany(editCompany.id, newCompany, authToken);
-        message.success("Company updated successfully");
-      } else {
-        await createCompany(newCompany, authToken);
-        message.success("Company added successfully");
-      }
-      setOpen(false);
-      resetForm();
+      setSaving(true);
+      await createCompany(selectedCompany, authToken);
+      message.success("Company added successfully!");
       fetchCompanies();
+      handleCloseDialog();
     } catch (err) {
-      console.error("Error saving company:", err);
-      message.error("Failed to save company");
+      message.error("Failed to add company.");
+    } finally {
+      setSaving(false);
     }
   };
 
-  const handleEdit = (record) => {
-    setEditCompany(record);
-    setNewCompany({ ...record });
-    setOpen(true);
-  };
-
   const handleDelete = async (id) => {
+    const confirm = await Swal.fire({
+      title: "Are you sure?",
+      text: "This action will permanently delete the company.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete it!",
+    });
+    if (!confirm.isConfirmed) return;
     try {
       await deleteCompany(id, authToken);
-      message.success("Company deleted successfully");
-      setCompanies((prev) => prev.filter((c) => c.id !== id));
+      message.success("Company deleted successfully!");
+      fetchCompanies();
+      handleCloseDialog();
     } catch (err) {
-      console.error("Error deleting company:", err);
-      message.error("Failed to delete company");
+      message.error("Delete failed.");
     }
   };
 
@@ -122,69 +148,33 @@ const Company = () => {
   );
 
   const columns = [
-    {
-      title: "Sr No.",
-      dataIndex: "id",
-      key: "id",
-      render: (_, __, index) => index + 1,
-    },
+    { title: "Sr.No", key: "index", render: (_, __, index) => index + 1 },
     {
       title: "Company Name",
       dataIndex: "companyName",
       key: "companyName",
-    },
-    {
-      title: "Industry",
-      dataIndex: "industry",
-      key: "industry",
-    },
-    {
-      title: "Location",
-      dataIndex: "location",
-      key: "location",
-    },
-    {
-      title: "Founded Year",
-      dataIndex: "foundedYear",
-      key: "foundedYear",
-    },
-    {
-      title: "Employee Size",
-      dataIndex: "employeeSize",
-      key: "employeeSize",
-    },
-    {
-      title: "Available Jobs",
-      dataIndex: "availableJobs",
-      key: "availableJobs",
-    },
-    {
-      title: "Action",
-      key: "action",
-      render: (_, record) => (
-        <Box sx={{ display: "flex", gap: 1 }}>
-        
-          <Popconfirm
-            title="Are you sure to delete this company?"
-            onConfirm={() => handleDelete(record.id)}
-            okText="Yes"
-            cancelText="No"
-          >
-            <Button
-              variant="outlined"
-              color="error"
-              size="small"
-            >
-              Delete
-            </Button>
-          </Popconfirm>
-        </Box>
+      render: (text, record) => (
+        <Typography
+          sx={{
+            color: "primary.main",
+            cursor: "pointer",
+            "&:hover": { color: "primary.dark" },
+          }}
+          onClick={() => handleOpenDialog(record)}
+        >
+          {text}
+        </Typography>
       ),
     },
+    { title: "Industry", dataIndex: "industry", key: "industry" },
+    { title: "Location", dataIndex: "location", key: "location" },
+    { title: "Founded Year", dataIndex: "foundedYear", key: "foundedYear" },
+    { title: "Employee Size", dataIndex: "employeeSize", key: "employeeSize" },
+    { title: "Available Jobs", dataIndex: "availableJobs", key: "availableJobs" },
   ];
 
   return (
-    <Box sx={{ p: 3 }}>
+    <Box p={3}>
       {/* Header Section */}
       <Box
         sx={{
@@ -192,7 +182,6 @@ const Company = () => {
           justifyContent: "space-between",
           alignItems: "center",
           mb: 2,
-          
         }}
       >
         <TextField
@@ -205,10 +194,8 @@ const Company = () => {
         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
           <Button
             variant="contained"
-            onClick={() => {
-              resetForm();
-              setOpen(true);
-            }}
+            startIcon={<AddIcon />}
+            onClick={handleAddCompany}
             sx={{ minWidth: 150 }}
           >
             Add Company
@@ -233,126 +220,132 @@ const Company = () => {
         dataSource={filteredCompanies}
         rowKey="id"
         bordered
+        loading={loading}
         pagination={{
           pageSize: 25,
           showSizeChanger: true,
-          pageSizeOptions: [ "25", "50", "100","200"],
+          pageSizeOptions: ["25", "50", "100", "200"],
           showTotal: (total, range) =>
             `${range[0]}-${range[1]} of ${total} companies`,
         }}
         locale={{ emptyText: "No companies found" }}
       />
 
-      {/* Add/Edit Dialog */}
-      <Dialog open={open} onClose={() => setOpen(false)} fullWidth maxWidth="md">
-        <DialogTitle>{editCompany ? "Edit Company" : "Add Company"}</DialogTitle>
-        <DialogContent>
-          <Grid container spacing={2} sx={{ mt: 1 }} className="textField-root">
-            <Grid item xs={12} sm={6}>
-              <TextField
-                label="Company Name"
-                fullWidth
-                value={newCompany.companyName}
-                onChange={(e) =>
-                  setNewCompany({ ...newCompany, companyName: e.target.value })
-                }
-              />
+      {/* Dialog */}
+      {openDialog && selectedCompany && (
+        <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="md" fullWidth>
+          <DialogTitle sx={{ p: 0 }}>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                backgroundColor: "#1976d2",
+                color: "#fff",
+                px: 3,
+                py: 1,
+                borderTopLeftRadius: "8px",
+                borderTopRightRadius: "8px",
+              }}
+            >
+              <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                {editMode
+                  ? selectedCompany.id
+                    ? "Edit Company"
+                    : "Add Company"
+                  : "Company Details"}
+              </Typography>
+
+              <Box display="flex" alignItems="center">
+                {editMode ? (
+                  <>
+                    <Button
+                      variant="contained"
+                      size="small"
+                      onClick={
+                        selectedCompany.id ? handleUpdateCompany : handleSaveNew
+                      }
+                      disabled={saving}
+                      sx={{
+                        mr: 1,
+                        backgroundColor: "#fff",
+                        color: "#1976d2",
+                        "&:hover": { backgroundColor: "#e3f2fd" },
+                      }}
+                    >
+                      {saving ? "Saving..." : "Save"}
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      size="small"
+                      onClick={() => setEditMode(false)}
+                      sx={{
+                        mr: 1,
+                        color: "#fff",
+                        borderColor: "#fff",
+                        "&:hover": { backgroundColor: "rgba(255,255,255,0.2)" },
+                      }}
+                    >
+                      Cancel
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <IconButton sx={{ color: "#fff" }} onClick={() => setEditMode(true)}>
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton
+                      sx={{ color: "#fff" }}
+                      onClick={() => handleDelete(selectedCompany.id)}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </>
+                )}
+                <IconButton onClick={handleCloseDialog} sx={{ color: "#fff" }}>
+                  <CloseIcon />
+                </IconButton>
+              </Box>
+            </Box>
+          </DialogTitle>
+
+          <DialogContent dividers>
+            <Grid container spacing={2}>
+              {[
+                { name: "companyName", label: "Company Name" },
+                { name: "industry", label: "Industry" },
+                { name: "location", label: "Location" },
+                { name: "foundedYear", label: "Founded Year" },
+                { name: "employeeSize", label: "Employee Size" },
+                { name: "availableJobs", label: "Available Jobs" },
+                { name: "rating", label: "Rating" },
+                { name: "reviewCount", label: "Review Count" },
+                { name: "description", label: "Description" },
+              ].map(({ name, label }) => (
+                <Grid item xs={12} sm={6} key={name}>
+                  {editMode ? (
+                    <TextField
+                      fullWidth
+                      size="small"
+                      name={name}
+                      label={label}
+                      value={selectedCompany[name] || ""}
+                      onChange={handleChange}
+                      multiline={name === "description"}
+                      rows={name === "description" ? 3 : 1}
+                    />
+                  ) : (
+                    <Box display="flex" gap={1}>
+                      <Typography fontWeight="bold">{label}:</Typography>
+                      <Typography>{selectedCompany[name] || "-"}</Typography>
+                    </Box>
+                  )}
+                </Grid>
+              ))}
             </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                label="Industry"
-                fullWidth
-                value={newCompany.industry}
-                onChange={(e) =>
-                  setNewCompany({ ...newCompany, industry: e.target.value })
-                }
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                label="Location"
-                fullWidth
-                value={newCompany.location}
-                onChange={(e) =>
-                  setNewCompany({ ...newCompany, location: e.target.value })
-                }
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                label="Founded Year"
-                type="number"
-                fullWidth
-                value={newCompany.foundedYear}
-                onChange={(e) =>
-                  setNewCompany({ ...newCompany, foundedYear: e.target.value })
-                }
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                label="Employee Size"
-                fullWidth
-                value={newCompany.employeeSize}
-                onChange={(e) =>
-                  setNewCompany({ ...newCompany, employeeSize: e.target.value })
-                }
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                label="Available Jobs"
-                type="number"
-                fullWidth
-                value={newCompany.availableJobs}
-                onChange={(e) =>
-                  setNewCompany({ ...newCompany, availableJobs: e.target.value })
-                }
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                label="Rating"
-                type="number"
-                fullWidth
-                value={newCompany.rating}
-                onChange={(e) =>
-                  setNewCompany({ ...newCompany, rating: e.target.value })
-                }
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                label="Review Count"
-                type="number"
-                fullWidth
-                value={newCompany.reviewCount}
-                onChange={(e) =>
-                  setNewCompany({ ...newCompany, reviewCount: e.target.value })
-                }
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                label="Description"
-                multiline
-                rows={3}
-                fullWidth
-                value={newCompany.description}
-                onChange={(e) =>
-                  setNewCompany({ ...newCompany, description: e.target.value })
-                }
-              />
-            </Grid>
-          </Grid>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpen(false)}>Cancel</Button>
-          <Button variant="contained" onClick={handleSave}>
-            Save
-          </Button>
-        </DialogActions>
-      </Dialog>
+          </DialogContent>
+        </Dialog>
+      )}
     </Box>
   );
 };

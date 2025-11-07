@@ -1,6 +1,5 @@
-
 import React, { useEffect, useState } from "react";
-import { getAllPlans } from "./CreatePlans"; // API file
+import { getAllPlans } from "./CreatePlans"; 
 import {
   Box,
   Typography,
@@ -37,7 +36,7 @@ const ViewPlans = () => {
     } finally {
       setLoading(false);
     }
-  };
+  };  
 
   const handleAssignPlan = (planId, employeeId) => {
     console.log(`Assigned plan ${planId} to employee ${employeeId}`);
@@ -62,8 +61,6 @@ const ViewPlans = () => {
 
   return (
     <Box sx={{ p: 4, backgroundColor: "#f9fafc", minHeight: "100vh" }}>
-
-
       <Grid container spacing={4} justifyContent="center">
         {plans.map((plan) => {
           const discountedPrice = plan.price
@@ -100,7 +97,6 @@ const ViewPlans = () => {
                   {plan.discountPercentage >= 30 && (
                     <Chip
                       icon={<StarIcon />}
-                      label="Best Value"
                       color="warning"
                       sx={{
                         position: "absolute",
@@ -181,13 +177,47 @@ const ViewPlans = () => {
                       )}
                     </Box>
 
-                    <Typography
-                      variant="body2"
-                      color="textSecondary"
-                      sx={{ mt: 2 }}
+                    <Box 
+                      // sx={{
+                      //   mt: 2,
+                      //   p: 2,
+                      //   borderRadius: '8px',
+                      //   backgroundColor: 'rgba(25, 118, 210, 0.08)',
+                      //   width: '100%',
+                      //   textAlign: 'center',
+                      //   border: '1px solid rgba(25, 118, 210, 0.2)'
+                      // }}
                     >
-                      Includes {plan.jobPostLimit} job posts
-                    </Typography>
+                      {/* <Typography variant="subtitle2" color="primary" fontWeight="bold" gutterBottom>
+                        Job Posts Included
+                      </Typography>
+                      <Typography variant="h5" color="primary" fontWeight="bold" gutterBottom>
+                        {plan.jobPostLimit || 'Unlimited'}
+                        <Typography component="span" variant="body1" color="textSecondary">
+                          {plan.jobPostLimit ? ' posts' : ' job posts'}
+                        </Typography>
+                      </Typography> */}
+                      {plan.jobPostLimit > 0 && plan.price > 0 && (
+                        <Chip 
+                          size="small"
+                          label={`₹${(plan.price / plan.jobPostLimit).toFixed(2)} per post`}
+                          color="primary"
+                          variant="outlined"
+                          sx={{
+                            mt: 1,
+                            color: 'primary.main',
+                            borderColor: 'primary.light',
+                            backgroundColor: 'rgba(25, 118, 210, 0.1)',
+                            '& .MuiChip-label': {
+                              px: 1,
+                              py: 0.5,
+                              fontSize: '0.75rem',
+                              fontWeight: 500
+                            }
+                          }}
+                        />
+                      )}
+                    </Box>
 
                     {/* Button */}
                     <Button

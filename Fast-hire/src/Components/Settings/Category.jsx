@@ -74,7 +74,6 @@ const Category = ({ onBack, industryId, industryName }) => {
     }
   };
 
-  // ✅ Navigate to Subcategories
   const handleAddSubcategory = async (category) => {
     setSelectedCategory(category);
     try {
@@ -96,14 +95,12 @@ const Category = ({ onBack, industryId, industryName }) => {
     fetchCategories();
   };
 
-  // ✅ Filter by search
   const filteredCategories = categories.filter(
     (cat) =>
       cat.categoryname &&
       cat.categoryname.toLowerCase().includes(search.toLowerCase())
   );
 
-  // ✅ Show subcategories if toggled
   if (showSubcategories && selectedCategory) {
     return (
       <Box sx={{ p: 3 }}>
@@ -117,7 +114,6 @@ const Category = ({ onBack, industryId, industryName }) => {
     );
   }
 
-  // ✅ Table Columns
   const columns = [
     {
       title: "Sr.No",
@@ -151,7 +147,6 @@ const Category = ({ onBack, industryId, industryName }) => {
 
   return (
     <Box sx={{ p: 3 }}>
-      {/* Back Button */}
       <Button
         variant="outlined"
         startIcon={<ArrowBackIcon />}
@@ -169,8 +164,6 @@ const Category = ({ onBack, industryId, industryName }) => {
       >
         Back
       </Button>
-
-      {/* Header Section */}
       <Box
         sx={{
           display: "flex",
@@ -209,7 +202,7 @@ const Category = ({ onBack, industryId, industryName }) => {
               setNewCategory("");
             }}
           >
-            Add Job Role
+            Add Category
           </Button>
 
           <Chip
@@ -237,7 +230,7 @@ const Category = ({ onBack, industryId, industryName }) => {
         pagination={{
           pageSize: 25,
           showSizeChanger: true,
-          pageSizeOptions: [ "25", "50", "100","200"],
+          pageSizeOptions: ["25", "50", "100", "200"],
           showTotal: (total, range) =>
             `${range[0]}-${range[1]} of ${total} job roles`,
         }}

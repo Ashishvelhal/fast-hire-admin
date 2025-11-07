@@ -33,10 +33,10 @@ const Sidebar = ({ selectedComponent, onSelect }) => {
         padding: 1,
         display: "flex",
         flexDirection: "column",
-        borderRadius: 8,
+        borderRadius: 9,
         backgroundColor: "#2980B9",
         transition: "width 0.3s ease",
-        height: "40%",
+        height: "50%",
         overflowY: "hidden",
         border: "1px solid black"
       }}

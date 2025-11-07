@@ -15,15 +15,9 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import indianStatesAndDistricts from "../Common/indianStatesAndDistricts";
-import { getAllIndustries } from "../Settings/Industry";
-import { getAllCompanies } from "../Settings/Company";
-import { getAllPlans } from "../Plans/CreatePlans";
-import {
-  getAllEmployers,   
-  updateEmployer,
-  deleteEmployer,
-} from "../Employe/CreateEmploye";
+import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
+import { getAllEmployers, updateEmployer, deleteEmployer } from "../Employe/CreateEmploye";
+import Billing from "../Billing/Billing";  
 import "../Common/Design.css";
 
 const EmployerList = () => {
@@ -33,7 +27,7 @@ const EmployerList = () => {
   const [selectedEmployer, setSelectedEmployer] = useState(null);
   const [editMode, setEditMode] = useState(false);
   const [saving, setSaving] = useState(false);
-
+  const [openBilling, setOpenBilling] = useState(false);  
   const fetchEmployers = async () => {
     const authToken = sessionStorage.getItem("authToken");
     if (!authToken) {
@@ -52,7 +46,9 @@ const EmployerList = () => {
         email: item.email || "-",
         phoneNumber: item.phoneNumber || "-",
         industry: item.industry || "-",
-      }));
+        createdBy:
+          item.employerPlans?.[0]?.plan?.superAdmin?.email || "",
+      }));``
 
       setEmployers(normalized);
     } catch (error) {
@@ -134,10 +130,15 @@ const EmployerList = () => {
     }
   };
 
+  const handleBilling = (record) => {
+    setSelectedEmployer(record);  
+    setOpenBilling(true); 
+  };
+
   const columns = [
     { title: "Sr.No", key: "index", width: 70, render: (_, __, index) => index + 1 },
     {
-      title: "Company Name",
+      title: " Name",
       dataIndex: "companyName",
       key: "companyName",
       render: (text, record) => (
@@ -155,38 +156,62 @@ const EmployerList = () => {
       ),
     },
     { title: "Email", dataIndex: "email", key: "email", width: 200 },
-    { title: "Phone", dataIndex: "phoneNumber", key: "phoneNumber", width: 150 },
     { title: "Industry", dataIndex: "industry", key: "industry", width: 150 },
     {
       title: "Plan Name",
       key: "plan",
       render: (record) =>
-        record.employerPlans && record.employerPlans.length > 0
-          ? record.employerPlans[0].plan?.name
-          : "-",
+        record.employerPlans?.length > 0 ? record.employerPlans[0].plan?.name : "-",
     },
     {
-      title: "Plan Start Date",
+      title: "PStart Date",
       key: "planStartDate",
       render: (record) =>
-        record.employerPlans && record.employerPlans.length > 0
-          ? record.employerPlans[0].startDate
-            ? new Date(record.employerPlans[0].startDate).toLocaleDateString()
-            : "-"
+        record.employerPlans?.length > 0
+          ? new Date(record.employerPlans[0].startDate).toLocaleDateString()
           : "-",
     },
     {
-      title: "Plan End Date",
+      title: "PEnd Date",
       key: "planEndDate",
       render: (record) =>
-        record.employerPlans && record.employerPlans.length > 0
-          ? record.employerPlans[0].endDate
-            ? new Date(record.employerPlans[0].endDate).toLocaleDateString()
-            : "-"
+        record.employerPlans?.length > 0
+          ? new Date(record.employerPlans[0].endDate).toLocaleDateString()
           : "-",
     },
-    // { title: "Contact Person", dataIndex: "contactPerson", key: "contactPerson" },
+    {
+      title: "Created By",
+      dataIndex: "createdBy",
+      key: "createdBy",
+      width: 200,
+      render: (text) => <Typography>{text}</Typography>,
+    },
+    {
+      title: "Action",
+      key: "action",
+      width: 120,
+      render: (record) => (
+        <Button
+          variant="outlined"
+          size="small"
+          startIcon={<ReceiptLongIcon />}
+          sx={{
+            borderColor: "#1976d2",
+            color: "#1976d2",
+            fontWeight: "bold",
+            "&:hover": {
+              backgroundColor: "#e3f2fd",
+              borderColor: "#1565c0",
+            },
+          }}
+          onClick={() => handleBilling(record)}
+        >
+          Billing
+        </Button>
+      ),
+    },
   ];
+
   return (
     <Box p={3}>
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
@@ -201,6 +226,7 @@ const EmployerList = () => {
           variant="outlined"
         />
       </Box>
+
       <Table
         className="table-root"
         columns={columns}
@@ -215,6 +241,33 @@ const EmployerList = () => {
         }}
         locale={{ emptyText: "No employers found" }}
       />
+
+      <Dialog 
+        open={openBilling} 
+        onClose={() => setOpenBilling(false)}
+        maxWidth="lg"
+        fullWidth
+      >
+        <DialogTitle>
+          <Box display="flex" justifyContent="space-between" alignItems="center">
+            <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+              Billing Details - {selectedEmployer?.companyName}
+            </Typography>
+            <IconButton onClick={() => setOpenBilling(false)}>
+              <CloseIcon />
+            </IconButton>
+          </Box>
+        </DialogTitle>
+        <DialogContent>
+          {selectedEmployer && (
+            <Billing 
+              email={selectedEmployer.email}
+              onBack={() => setOpenBilling(false)}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
+
       {openDialog && selectedEmployer && (
         <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="md" fullWidth>
           <DialogTitle sx={{ p: 0 }}>
@@ -231,12 +284,9 @@ const EmployerList = () => {
                 borderTopRightRadius: "8px",
               }}
             >
-              {/* Header Title */}
               <Typography variant="h6" sx={{ fontWeight: "bold" }}>
                 {editMode ? "Edit Employer" : "Employer Details"}
               </Typography>
-
-              {/* Action Icons */}
               <Box display="flex" alignItems="center">
                 {editMode ? (
                   <>
@@ -269,14 +319,10 @@ const EmployerList = () => {
                     </Button>
                   </>
                 ) : (
-                  <IconButton
-                    sx={{ color: "#fff" }}
-                    onClick={() => setEditMode(true)}
-                  >
+                  <IconButton sx={{ color: "#fff" }} onClick={() => setEditMode(true)}>
                     <EditIcon />
                   </IconButton>
                 )}
-
                 <IconButton
                   sx={{ color: "#fff" }}
                   onClick={() =>
@@ -310,6 +356,8 @@ const EmployerList = () => {
                 { name: "industry", label: "Industry" },
                 { name: "companySize", label: "Company Size" },
                 { name: "foundedYear", label: "Founded Year" },
+                { name: "address", label: "Address" },
+                { name: "createdBy", label: "Created By (Super Admin)" },
               ].map(({ name, label }) => (
                 <Grid item xs={12} sm={6} key={name}>
                   {editMode ? (
@@ -320,7 +368,7 @@ const EmployerList = () => {
                       label={label}
                       value={selectedEmployer[name] || ""}
                       onChange={handleChange}
-                      disabled={name === "email"}
+                      disabled={["email", "createdBy"].includes(name)}
                     />
                   ) : (
                     <Box display="flex" gap={1}>
@@ -330,33 +378,16 @@ const EmployerList = () => {
                   )}
                 </Grid>
               ))}
-              <Grid item xs={12} sm={6}>
-                <Box display="flex" gap={1}>
-                  <Typography fontWeight="bold">Plan Start Date:</Typography>
-                  <Typography>
-                    {selectedEmployer.employerPlans && selectedEmployer.employerPlans.length > 0
-                      ? selectedEmployer.employerPlans[0].startDate
-                        ? new Date(selectedEmployer.employerPlans[0].startDate).toLocaleDateString()
-                        : "-"
-                      : "-"}
-                  </Typography>
-                </Box>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <Box display="flex" gap={1}>
-                  <Typography fontWeight="bold">Plan End Date:</Typography>
-                  <Typography>
-                    {selectedEmployer.employerPlans && selectedEmployer.employerPlans.length > 0
-                      ? selectedEmployer.employerPlans[0].endDate
-                        ? new Date(selectedEmployer.employerPlans[0].endDate).toLocaleDateString()
-                        : "-"
-                      : "-"}
-                  </Typography>
-                </Box>
-              </Grid>
             </Grid>
           </DialogContent>
         </Dialog>
+      )}
+
+      {openBilling && selectedEmployer && (
+        <Billing
+          email={selectedEmployer.email}
+          onBack={() => setOpenBilling(false)} 
+        />
       )}
     </Box>
   );
