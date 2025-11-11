@@ -194,7 +194,6 @@ const Company = () => {
         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
           <Button
             variant="contained"
-            startIcon={<AddIcon />}
             onClick={handleAddCompany}
             sx={{ minWidth: 150 }}
           >

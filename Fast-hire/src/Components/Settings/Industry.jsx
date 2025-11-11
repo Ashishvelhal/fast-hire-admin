@@ -205,7 +205,7 @@ const Industry = () => {
           </Button>
 
           <Chip
-            label={`Total Industries: ${filteredIndustries.length}`}
+            label={`Total : ${filteredIndustries.length}`}
             sx={{
               border: "1px solid #1976D2",
               backgroundColor: "transparent",

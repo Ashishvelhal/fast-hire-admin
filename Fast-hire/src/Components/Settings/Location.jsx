@@ -165,7 +165,7 @@ const Location = () => {
           </Button>
 
           <Chip
-            label={`Total Locations: ${filteredLocations.length}`}
+            label={`Total : ${filteredLocations.length}`}
             sx={{
               border: "1px solid #1976D2",
               backgroundColor: "transparent",

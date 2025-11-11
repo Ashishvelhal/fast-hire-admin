@@ -157,28 +157,7 @@ const EmployerList = () => {
     },
     { title: "Email", dataIndex: "email", key: "email", width: 200 },
     { title: "Industry", dataIndex: "industry", key: "industry", width: 150 },
-    {
-      title: "Plan Name",
-      key: "plan",
-      render: (record) =>
-        record.employerPlans?.length > 0 ? record.employerPlans[0].plan?.name : "-",
-    },
-    {
-      title: "PStart Date",
-      key: "planStartDate",
-      render: (record) =>
-        record.employerPlans?.length > 0
-          ? new Date(record.employerPlans[0].startDate).toLocaleDateString()
-          : "-",
-    },
-    {
-      title: "PEnd Date",
-      key: "planEndDate",
-      render: (record) =>
-        record.employerPlans?.length > 0
-          ? new Date(record.employerPlans[0].endDate).toLocaleDateString()
-          : "-",
-    },
+   
     {
       title: "Created By",
       dataIndex: "createdBy",
