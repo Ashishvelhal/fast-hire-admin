@@ -13,7 +13,6 @@ import {
   Stack,
 } from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import StarIcon from "@mui/icons-material/Star";
 import { useNavigate } from "react-router-dom";
 
 const ViewPlans = () => {
@@ -96,7 +95,6 @@ const ViewPlans = () => {
                 >
                   {plan.discountPercentage >= 30 && (
                     <Chip
-                      icon={<StarIcon />}
                       color="warning"
                       sx={{
                         position: "absolute",
@@ -135,7 +133,6 @@ const ViewPlans = () => {
                           <Typography
                             variant="body2"
                             color="error"
-                            sx={{ textDecoration: "line-through" }}
                           >
                             ₹{plan.price} ({plan.discountPercentage}% OFF)
                           </Typography>

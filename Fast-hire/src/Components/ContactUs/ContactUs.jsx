@@ -156,8 +156,6 @@ const ContactUs = () => {
           />
         </Col>
       </Row>
-
-      {/* Table Section */}
       <Table
         className="table-root"
         columns={columns}
@@ -179,7 +177,6 @@ const ContactUs = () => {
             `${range[0]}-${range[1]} of ${total} records`,
         }}
       />
-
       <Modal
         open={isModalVisible}
         title="Contact Details"

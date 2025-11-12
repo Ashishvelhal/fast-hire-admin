@@ -157,7 +157,6 @@ const EmployerList = () => {
     },
     { title: "Email", dataIndex: "email", key: "email", width: 200 },
     { title: "Industry", dataIndex: "industry", key: "industry", width: 150 },
-   
     {
       title: "Created By",
       dataIndex: "createdBy",

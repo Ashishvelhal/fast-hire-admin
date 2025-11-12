@@ -23,7 +23,6 @@ export const getCompanyById = async (id, token) => {
   });
 };
 
-// ✅ UPDATE Company (with logo upload)
 export const updateCompany = async (id, company, token) => {
   const formData = new FormData();
   formData.append("company", JSON.stringify(company));

@@ -175,7 +175,6 @@ const Company = () => {
 
   return (
     <Box p={3}>
-      {/* Header Section */}
       <Box
         sx={{
           display: "flex",
@@ -229,8 +228,6 @@ const Company = () => {
         }}
         locale={{ emptyText: "No companies found" }}
       />
-
-      {/* Dialog */}
       {openDialog && selectedCompany && (
         <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="md" fullWidth>
           <DialogTitle sx={{ p: 0 }}>
