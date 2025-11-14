@@ -16,8 +16,12 @@ import CloseIcon from "@mui/icons-material/Close";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
-import { getAllEmployers, updateEmployer, deleteEmployer } from "../Employe/CreateEmploye";
-import Billing from "../Billing/Billing";  
+import {
+  getAllEmployers,
+  updateEmployer,
+  deleteEmployer,
+} from "../Employe/CreateEmploye";
+import Billing from "../Billing/Billing";
 import "../Common/Design.css";
 
 const EmployerList = () => {
@@ -27,7 +31,8 @@ const EmployerList = () => {
   const [selectedEmployer, setSelectedEmployer] = useState(null);
   const [editMode, setEditMode] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [openBilling, setOpenBilling] = useState(false);  
+  const [openBilling, setOpenBilling] = useState(false);
+
   const fetchEmployers = async () => {
     const authToken = sessionStorage.getItem("authToken");
     if (!authToken) {
@@ -38,17 +43,23 @@ const EmployerList = () => {
     try {
       setLoading(true);
       const res = await getAllEmployers(authToken);
-      let data = Array.isArray(res) ? res : Array.isArray(res.data) ? res.data : [];
+      let data = Array.isArray(res)
+        ? res
+        : Array.isArray(res.data)
+        ? res.data
+        : [];
 
       const normalized = data.map((item) => ({
         ...item,
-        companyName: item.companyName || item.company || "-",
+
+        companyName: item.companyName || "-",
         email: item.email || "-",
         phoneNumber: item.phoneNumber || "-",
         industry: item.industry || "-",
-        createdBy:
-          item.employerPlans?.[0]?.plan?.superAdmin?.email || "",
-      }));``
+
+        createdBy: item.createdBy || "-",
+        creatorEmail: item.creatorEmail || "-", 
+      }));
 
       setEmployers(normalized);
     } catch (error) {
@@ -131,14 +142,19 @@ const EmployerList = () => {
   };
 
   const handleBilling = (record) => {
-    setSelectedEmployer(record);  
-    setOpenBilling(true); 
+    setSelectedEmployer(record);
+    setOpenBilling(true);
   };
 
   const columns = [
-    { title: "Sr.No", key: "index", width: 70, render: (_, __, index) => index + 1 },
     {
-      title: " Name",
+      title: "Sr.No",
+      key: "index",
+      width: 70,
+      render: (_, __, index) => index + 1,
+    },
+    {
+      title: "Name",
       dataIndex: "companyName",
       key: "companyName",
       render: (text, record) => (
@@ -147,7 +163,7 @@ const EmployerList = () => {
             color: "primary.main",
             cursor: "pointer",
             fontWeight: 600,
-            "&:hover": { color: "primary.dark", textDecoration: "underline" },
+            "&:hover": { color: "primary.dark" },
           }}
           onClick={() => handleOpenDialog(record)}
         >
@@ -155,15 +171,25 @@ const EmployerList = () => {
         </Typography>
       ),
     },
-    { title: "Email", dataIndex: "email", key: "email", width: 200 },
+    { title: "Email", dataIndex: "email", key: "email", width: 180 },
     { title: "Industry", dataIndex: "industry", key: "industry", width: 150 },
+
     {
-      title: "Created By",
+      title: "Created Name",
       dataIndex: "createdBy",
       key: "createdBy",
+      width: 180,
+      render: (text) => <Typography>{text}</Typography>,
+    },
+
+    {
+      title: "Created Email",
+      dataIndex: "creatorEmail",
+      key: "creatorEmail",
       width: 200,
       render: (text) => <Typography>{text}</Typography>,
     },
+
     {
       title: "Action",
       key: "action",
@@ -215,20 +241,21 @@ const EmployerList = () => {
           pageSize: 25,
           showSizeChanger: true,
           pageSizeOptions: ["25", "50", "100", "200"],
-          showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} employers`,
+          showTotal: (total, range) =>
+            `${range[0]}-${range[1]} of ${total} employers`,
         }}
         locale={{ emptyText: "No employers found" }}
       />
 
-      <Dialog 
-        open={openBilling} 
+      <Dialog
+        open={openBilling}
         onClose={() => setOpenBilling(false)}
         maxWidth="lg"
         fullWidth
       >
         <DialogTitle>
           <Box display="flex" justifyContent="space-between" alignItems="center">
-            <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+            <Typography variant="h6" sx={{ fontWeight: "bold" }}>
               Billing Details - {selectedEmployer?.companyName}
             </Typography>
             <IconButton onClick={() => setOpenBilling(false)}>
@@ -238,7 +265,7 @@ const EmployerList = () => {
         </DialogTitle>
         <DialogContent>
           {selectedEmployer && (
-            <Billing 
+            <Billing
               email={selectedEmployer.email}
               onBack={() => setOpenBilling(false)}
             />
@@ -265,8 +292,13 @@ const EmployerList = () => {
               <Typography variant="h6" sx={{ fontWeight: "bold" }}>
                 {editMode ? "Edit Employer" : "Employer Details"}
               </Typography>
+
               <Box display="flex" alignItems="center">
-                {editMode ? (
+                {!editMode ? (
+                  <IconButton sx={{ color: "#fff" }} onClick={() => setEditMode(true)}>
+                    <EditIcon />
+                  </IconButton>
+                ) : (
                   <>
                     <Button
                       variant="contained"
@@ -282,6 +314,7 @@ const EmployerList = () => {
                     >
                       {saving ? "Saving..." : "Update"}
                     </Button>
+
                     <Button
                       variant="outlined"
                       size="small"
@@ -296,11 +329,8 @@ const EmployerList = () => {
                       Cancel
                     </Button>
                   </>
-                ) : (
-                  <IconButton sx={{ color: "#fff" }} onClick={() => setEditMode(true)}>
-                    <EditIcon />
-                  </IconButton>
                 )}
+
                 <IconButton
                   sx={{ color: "#fff" }}
                   onClick={() =>
@@ -335,7 +365,9 @@ const EmployerList = () => {
                 { name: "companySize", label: "Company Size" },
                 { name: "foundedYear", label: "Founded Year" },
                 { name: "address", label: "Address" },
-                { name: "createdBy", label: "Created By (Super Admin)" },
+
+                { name: "createdBy", label: "Created Name" },
+                { name: "creatorEmail", label: "Created Email" },
               ].map(({ name, label }) => (
                 <Grid item xs={12} sm={6} key={name}>
                   {editMode ? (
@@ -346,7 +378,7 @@ const EmployerList = () => {
                       label={label}
                       value={selectedEmployer[name] || ""}
                       onChange={handleChange}
-                      disabled={["email", "createdBy"].includes(name)}
+                      disabled={["email", "createdBy", "creatorEmail"].includes(name)}
                     />
                   ) : (
                     <Box display="flex" gap={1}>
@@ -359,13 +391,6 @@ const EmployerList = () => {
             </Grid>
           </DialogContent>
         </Dialog>
-      )}
-
-      {openBilling && selectedEmployer && (
-        <Billing
-          email={selectedEmployer.email}
-          onBack={() => setOpenBilling(false)} 
-        />
       )}
     </Box>
   );

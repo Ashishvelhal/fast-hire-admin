@@ -14,7 +14,7 @@ import {
   getAllEnquiries,
   getEnquiryById,
   deleteEnquiry,
-} from "../DegreeLeads/DegreeLeads"; // ✅ adjust import path if needed
+} from "../DegreeLeads/DegreeLeads";
 
 const { Search } = Input;
 const { Text } = Typography;
@@ -30,7 +30,6 @@ const DegreeLeads = () => {
   const [pageSize, setPageSize] = useState(25);
   const [searchEmail, setSearchEmail] = useState("");
 
-  // ✅ Load all enquiries from backend
   const loadEnquiries = async () => {
     setLoading(true);
     try {
@@ -49,7 +48,6 @@ const DegreeLeads = () => {
     loadEnquiries();
   }, []);
 
-  // ✅ Email Search Filter
   const handleSearch = (value) => {
     setSearchEmail(value);
     if (value.trim() === "") {
@@ -62,7 +60,6 @@ const DegreeLeads = () => {
     }
   };
 
-  // ✅ View Details
   const handleView = async (eid) => {
     try {
       const data = await getEnquiryById(eid);
@@ -73,7 +70,6 @@ const DegreeLeads = () => {
     }
   };
 
-  // ✅ Delete Enquiry
   const handleDelete = async (eid) => {
     Modal.confirm({
       title: "Are you sure you want to delete this enquiry?",

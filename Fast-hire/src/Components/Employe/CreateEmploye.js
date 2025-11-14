@@ -32,7 +32,7 @@ export const getEmployerById = (id, token) => {
       Authorization: `Bearer ${token}`,
     },
   });
-};
+};7
 
 export const updateEmployer = (id, employerFormData, token) => {
   return axiosInstance.put(`/${id}/updateEmployer`, employerFormData, {
