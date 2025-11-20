@@ -1,9 +1,9 @@
 // src/api/ContactUsService.js
 import axios from "axios";
 
-const BASE_URL = "http://localhost:8081/contactus"; 
+// const BASE_URL = "http://localhost:8081/contactus"; 
 
-// const BASE_URL = "https://fasthire.in:14443/contactus"; 
+const BASE_URL = "https://fasthire.in:14443/contactus"; 
 
 export const createContactUs = async (contactData) => {
   try {

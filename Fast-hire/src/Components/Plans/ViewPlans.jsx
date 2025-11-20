@@ -83,7 +83,6 @@ const ViewPlans = () => {
                   },
                 }}
               >
-                {/* Header */}
                 <Box
                   sx={{
                     background: "linear-gradient(135deg, #1976d2, #64b5f6)",
@@ -134,7 +133,7 @@ const ViewPlans = () => {
                             variant="body2"
                             color="error"
                           >
-                            ₹{plan.price} ({plan.discountPercentage}% OFF)
+                            ₹{plan.price} ({plan.discountPercentage}% Off)
                           </Typography>
                         )}
                       </>
@@ -233,7 +232,8 @@ const ViewPlans = () => {
                           handleAssignPlan(plan.id, "new_employee_id");
                         } else {
                           handleAssignPlan(plan.id, "selected_employer_id");
-                          navigate("/admin/fasthireadminlayout/employe", {
+                          navigate("/admin/fasthireadminlayout/employe",
+                             {
                             state: { plan },
                           });
                         }

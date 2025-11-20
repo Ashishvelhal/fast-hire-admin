@@ -2,9 +2,9 @@
 import axios from "axios";
 import axiosInstance from "../Utils/axiosConfig";
 
-const API_BASE_URL = "http://localhost:8080";
+// const API_BASE_URL = "http://localhost:8080";
 
-// const API_BASE_URL = "https://fasthire.in:12443"; 
+const API_BASE_URL = "https://fasthire.in:12443"; 
 
 // Create axios instance with common settings
 const apiClient = axios.create({

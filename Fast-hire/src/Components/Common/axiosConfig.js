@@ -1,9 +1,9 @@
 import axios from "axios";
 import Swal from "sweetalert2";
 const axiosInstance = axios.create({
-    // baseURL: "https://fasthire.in:12443",
+    baseURL: "https://fasthire.in:12443",
     
-    baseURL: "http://localhost:8080", // your base URL
+    // baseURL: "http://localhost:8080", // your base URL
     // your base URLi
 });
 // Request Interceptor: attach token
