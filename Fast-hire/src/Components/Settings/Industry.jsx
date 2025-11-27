@@ -13,6 +13,7 @@ import {
   IconButton,
   Stack,
 } from "@mui/material";
+import AlertService from "../Common/AlertService";
 import { Table } from "antd";
 import Category from "./Category.jsx";
 import "../Common/Design.css";
@@ -53,7 +54,10 @@ const Industry = () => {
 
   // ✅ Handle Add / Update Industry
   const handleSaveIndustry = async () => {
-    if (!newIndustry.trim()) return alert("Industry name is required");
+    if (!newIndustry.trim()) {
+      AlertService.warning("Industry name is required");
+      return;
+    }
 
     const payload = { industryname: newIndustry };
     try {
@@ -68,6 +72,7 @@ const Industry = () => {
       fetchIndustries();
     } catch (err) {
       console.error("Error saving industry:", err);
+      AlertService.error("Failed to save industry");
     }
   };
 

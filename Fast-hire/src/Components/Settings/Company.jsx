@@ -5,24 +5,21 @@ import {
   DialogTitle,
   DialogContent,
   Button,
-  IconButton,
+  DialogActions,
   TextField,
   Grid,
   Typography,
   Chip,
 } from "@mui/material";
-import { Table, message } from "antd";
-import CloseIcon from "@mui/icons-material/Close";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
-import AddIcon from "@mui/icons-material/Add";
-import Swal from "sweetalert2";
+import { Table } from "antd";
+import AlertService from "../Common/AlertService";
 import {
   createCompany,
   getAllCompanies,
   updateCompany,
   deleteCompany,
 } from "./Company";
+
 import "../Common/Design.css";
 
 const Company = () => {
@@ -40,12 +37,10 @@ const Company = () => {
     try {
       setLoading(true);
       const res = await getAllCompanies();
-      const data = Array.isArray(res.data)
-        ? res.data
-        : res.data?.data || [];
+      const data = Array.isArray(res.data) ? res.data : res.data?.data || [];
       setCompanies(data);
     } catch (err) {
-      message.error("Failed to load companies.");
+      AlertService.error("Failed to load companies.");
     } finally {
       setLoading(false);
     }
@@ -54,6 +49,22 @@ const Company = () => {
   useEffect(() => {
     fetchCompanies();
   }, []);
+
+  const handleAddCompany = () => {
+    setSelectedCompany({
+      companyName: "",
+      industry: "",
+      location: "",
+      description: "",
+      employeeSize: "",
+      foundedYear: "",
+      rating: "",
+      reviewCount: "",
+      availableJobs: "",
+    });
+    setEditMode(true);
+    setOpenDialog(true);
+  };
 
   const handleOpenDialog = (company) => {
     setSelectedCompany({ ...company });
@@ -68,83 +79,56 @@ const Company = () => {
   };
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setSelectedCompany((prev) => ({ ...prev, [name]: value }));
+    setSelectedCompany((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
   const handleUpdateCompany = async () => {
     try {
       setSaving(true);
       await updateCompany(selectedCompany.id, selectedCompany, authToken);
-      message.success("Company updated successfully!");
+      AlertService.success("Company updated successfully!");
       fetchCompanies();
       handleCloseDialog();
-    } catch (err) {
-      message.error("Update failed.");
+    } catch {
+      AlertService.error("Update failed.");
     } finally {
       setSaving(false);
     }
   };
 
-  const handleAddCompany = () => {
-    setSelectedCompany({
-      companyName: "",
-      industry: "",
-      location: "",
-      description: "",
-      perks: "",
-      employeeSize: "",
-      foundedYear: "",
-      rating: "",
-      reviewCount: "",
-      availableJobs: "",
-      logoUrl: "",
-    });
-    setEditMode(true);
-    setOpenDialog(true);
-  };
-
   const handleSaveNew = async () => {
     if (!selectedCompany.companyName.trim())
-      return message.warning("Company name is required.");
+      return AlertService.warning("Company name is required.");
+
     try {
       setSaving(true);
       await createCompany(selectedCompany, authToken);
-      message.success("Company added successfully!");
+      AlertService.success("Company added successfully!");
       fetchCompanies();
       handleCloseDialog();
-    } catch (err) {
-      message.error("Failed to add company.");
+    } catch {
+      AlertService.error("Failed to add company.");
     } finally {
       setSaving(false);
     }
   };
 
   const handleDelete = async (id) => {
-    const confirm = await Swal.fire({
-      title: "Are you sure?",
-      text: "This action will permanently delete the company.",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#d33",
-      cancelButtonColor: "#3085d6",
-      confirmButtonText: "Yes, delete it!",
-    });
-    if (!confirm.isConfirmed) return;
+    const confirmed = await AlertService.confirm("This action will permanently delete the company.");
+    if (!confirmed) return;
+
     try {
       await deleteCompany(id, authToken);
-      message.success("Company deleted successfully!");
+      AlertService.success("Company deleted successfully!");
       fetchCompanies();
       handleCloseDialog();
-    } catch (err) {
-      message.error("Delete failed.");
+    } catch {
+      AlertService.error("Delete failed.");
     }
   };
 
-  const filteredCompanies = companies.filter(
-    (c) =>
-      c.companyName &&
-      c.companyName.toLowerCase().includes(search.toLowerCase())
+  const filteredCompanies = companies.filter((c) =>
+    c.companyName?.toLowerCase().includes(search.toLowerCase())
   );
 
   const columns = [
@@ -158,6 +142,7 @@ const Company = () => {
           sx={{
             color: "primary.main",
             cursor: "pointer",
+            fontWeight: 600,
             "&:hover": { color: "primary.dark" },
           }}
           onClick={() => handleOpenDialog(record)}
@@ -171,10 +156,27 @@ const Company = () => {
     { title: "Founded Year", dataIndex: "foundedYear", key: "foundedYear" },
     { title: "Employee Size", dataIndex: "employeeSize", key: "employeeSize" },
     { title: "Available Jobs", dataIndex: "availableJobs", key: "availableJobs" },
+    {
+      title: "Actions",
+      key: "actions",
+      render: (_, record) => (
+        <Button
+          variant="outlined"
+          color="error"
+          size="small"
+          onClick={() => handleDelete(record.id)}
+          aria-label={`Delete ${record.companyName || "company"}`}
+          sx={{ textTransform: "none" }}
+        >
+          Delete
+        </Button>
+      ),
+    },
   ];
 
   return (
     <Box p={3}>
+      {/* Header */}
       <Box
         sx={{
           display: "flex",
@@ -185,33 +187,29 @@ const Company = () => {
       >
         <TextField
           placeholder="Search Company"
+          size="small"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          size="small"
           sx={{ width: 250 }}
         />
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-          <Button
-            variant="contained"
-            onClick={handleAddCompany}
-            sx={{ minWidth: 150 }}
-          >
+        <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
+          <Button variant="contained"  onClick={handleAddCompany}>
             Add Company
           </Button>
           <Chip
             label={`Total: ${filteredCompanies.length}`}
+            variant="outlined"
             sx={{
               border: "1px solid #1976D2",
               backgroundColor: "transparent",
               fontWeight: "bold",
               color: "#1976D2",
             }}
-            variant="outlined"
           />
         </Box>
       </Box>
 
-      {/* Company Table */}
+      {/* Table */}
       <Table
         className="table-root"
         columns={columns}
@@ -227,86 +225,18 @@ const Company = () => {
             `${range[0]}-${range[1]} of ${total} companies`,
         }}
         locale={{ emptyText: "No companies found" }}
+        style={{ borderRadius: "12px", overflow: "hidden" }}
       />
-      {openDialog && selectedCompany && (
-        <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="md" fullWidth>
-          <DialogTitle sx={{ p: 0 }}>
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                backgroundColor: "#1976d2",
-                color: "#fff",
-                px: 3,
-                py: 1,
-                borderTopLeftRadius: "8px",
-                borderTopRightRadius: "8px",
-              }}
-            >
-              <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-                {editMode
-                  ? selectedCompany.id
-                    ? "Edit Company"
-                    : "Add Company"
-                  : "Company Details"}
-              </Typography>
 
-              <Box display="flex" alignItems="center">
-                {editMode ? (
-                  <>
-                    <Button
-                      variant="contained"
-                      size="small"
-                      onClick={
-                        selectedCompany.id ? handleUpdateCompany : handleSaveNew
-                      }
-                      disabled={saving}
-                      sx={{
-                        mr: 1,
-                        backgroundColor: "#fff",
-                        color: "#1976d2",
-                        "&:hover": { backgroundColor: "#e3f2fd" },
-                      }}
-                    >
-                      {saving ? "Saving..." : "Save"}
-                    </Button>
-                    <Button
-                      variant="outlined"
-                      size="small"
-                      onClick={() => setEditMode(false)}
-                      sx={{
-                        mr: 1,
-                        color: "#fff",
-                        borderColor: "#fff",
-                        "&:hover": { backgroundColor: "rgba(255,255,255,0.2)" },
-                      }}
-                    >
-                      Cancel
-                    </Button>
-                  </>
-                ) : (
-                  <>
-                    <IconButton sx={{ color: "#fff" }} onClick={() => setEditMode(true)}>
-                      <EditIcon />
-                    </IconButton>
-                    <IconButton
-                      sx={{ color: "#fff" }}
-                      onClick={() => handleDelete(selectedCompany.id)}
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                  </>
-                )}
-                <IconButton onClick={handleCloseDialog} sx={{ color: "#fff" }}>
-                  <CloseIcon />
-                </IconButton>
-              </Box>
-            </Box>
+      {/* Dialog */}
+      {openDialog && (
+        <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="md" fullWidth>
+          <DialogTitle sx={{ fontWeight: 600 }}>
+            {editMode ? "Add / Edit Company" : "Company Details"}
           </DialogTitle>
 
           <DialogContent dividers>
-            <Grid container spacing={2}>
+            <Grid container spacing={2}   className="textField-root">
               {[
                 { name: "companyName", label: "Company Name" },
                 { name: "industry", label: "Industry" },
@@ -316,30 +246,30 @@ const Company = () => {
                 { name: "availableJobs", label: "Available Jobs" },
                 { name: "rating", label: "Rating" },
                 { name: "reviewCount", label: "Review Count" },
-                { name: "description", label: "Description" },
               ].map(({ name, label }) => (
                 <Grid item xs={12} sm={6} key={name}>
-                  {editMode ? (
-                    <TextField
-                      fullWidth
-                      size="small"
-                      name={name}
-                      label={label}
-                      value={selectedCompany[name] || ""}
-                      onChange={handleChange}
-                      multiline={name === "description"}
-                      rows={name === "description" ? 3 : 1}
-                    />
-                  ) : (
-                    <Box display="flex" gap={1}>
-                      <Typography fontWeight="bold">{label}:</Typography>
-                      <Typography>{selectedCompany[name] || "-"}</Typography>
-                    </Box>
-                  )}
+                  <TextField
+                    fullWidth
+                    size="small"
+                    label={label}
+                    name={name}
+                    value={selectedCompany?.[name] || ""}
+                    onChange={handleChange}
+                  />
                 </Grid>
               ))}
             </Grid>
           </DialogContent>
+
+          <DialogActions>
+            <Button onClick={handleCloseDialog}>Cancel</Button>
+            <Button
+              variant="contained"
+              onClick={selectedCompany?.id ? handleUpdateCompany : handleSaveNew}
+            >
+              Save
+            </Button>
+          </DialogActions>
         </Dialog>
       )}
     </Box>

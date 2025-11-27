@@ -1,8 +1,8 @@
 import axios from "axios";
 
-const BASE_URL = "https://fasthire.in:10443";
+// const BASE_URL = "https://fasthire.in:12443";
 
-// const BASE_URL = "http://localhost:8080"; // Update if backend URL changes
+const BASE_URL = "http://localhost:8080"; // Update if backend URL changes
 
 const axiosInstance = axios.create({
     baseURL: BASE_URL,

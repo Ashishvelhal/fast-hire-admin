@@ -5,6 +5,7 @@ import {
   updateLocation,
   deleteLocation,
 } from "./Location";
+import AlertService from "../Common/AlertService";
 import {
   Box,
   Button,
@@ -42,6 +43,7 @@ const Location = () => {
       setLocations(data);
     } catch (err) {
       console.error("Error fetching locations:", err);
+      AlertService.error("Failed to fetch locations");
     } finally {
       setLoading(false);
     }
@@ -53,7 +55,10 @@ const Location = () => {
 
   // ✅ Handle Add / Update
   const handleSave = async () => {
-    if (!newLocation.trim()) return alert("Location name is required");
+    if (!newLocation.trim()) {
+      AlertService.warning("Location name is required");
+      return;
+    }
 
     try {
       const payload = { locationname: newLocation };
@@ -68,17 +73,21 @@ const Location = () => {
       fetchLocations();
     } catch (err) {
       console.error("Error saving location:", err);
+      AlertService.error("Failed to save location");
     }
   };
 
   // ✅ Handle Delete
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this location?")) return;
+    const confirmed = await AlertService.confirm("Are you sure you want to delete this location?");
+    if (!confirmed) return;
     try {
       await deleteLocation(id, authToken);
       setLocations((prev) => prev.filter((loc) => loc.id !== id));
+      AlertService.success("Location deleted successfully");
     } catch (err) {
       console.error("Error deleting location:", err);
+      AlertService.error("Failed to delete location");
     }
   };
 

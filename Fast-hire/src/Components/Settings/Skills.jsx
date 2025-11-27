@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { message, Table } from "antd";
+import { Table } from "antd";
 import axiosInstance from "../Common/axiosConfig";
+import AlertService from "../Common/AlertService";
 import {
     Box,
     Button,
@@ -34,7 +35,7 @@ const Skills = ({ onBack, subCategoryId, subCategoryName }) => {
             setSkills(Array.isArray(response.data) ? response.data : []);
         } catch (err) {
             console.error("Error fetching skills:", err);
-            message.error("Failed to fetch skills");
+            AlertService.error("Failed to fetch skills");
         } finally {
             setLoading(false);
         }
@@ -46,7 +47,7 @@ const Skills = ({ onBack, subCategoryId, subCategoryName }) => {
 
     const handleSave = async () => {
         if (!newSkill.trim()) {
-            message.warning("Please enter skill name");
+            AlertService.warning("Please enter skill name");
             return;
         }
         try {
@@ -55,12 +56,12 @@ const Skills = ({ onBack, subCategoryId, subCategoryName }) => {
                 await axiosInstance.put(`/updateSkill/${editSkill.id}`, payload, {
                     headers: { Authorization: `Bearer ${authToken}` },
                 });
-                message.success("Skill updated successfully");
+                AlertService.success("Skill updated successfully");
             } else {
                 await axiosInstance.post(`/createSkill/${subCategoryId}`, payload, {
                     headers: { Authorization: `Bearer ${authToken}` },
                 });
-                message.success("Skill created successfully");
+                AlertService.success("Skill created successfully");
             }
             setOpen(false);
             setNewSkill("");
@@ -69,22 +70,23 @@ const Skills = ({ onBack, subCategoryId, subCategoryName }) => {
         } catch (err) {
             console.error("Error saving skill:", err);
             const errorMessage = err.response?.data?.message || "Failed to save skill. Please try again.";
-            message.error(errorMessage);
+            AlertService.error(errorMessage);
         }
     };
 
     const handleDelete = async (id) => {
-        if (!window.confirm("Are you sure you want to delete this skill?")) return;
+        const confirmed = await AlertService.confirm("Are you sure you want to delete this skill?");
+        if (!confirmed) return;
         try {
             await axiosInstance.delete(`/deleteSkill/${id}`, {
                 headers: { Authorization: `Bearer ${authToken}` },
             });
-            message.success("Skill deleted successfully");
+            AlertService.success("Skill deleted successfully");
             await fetchSkills();
         } catch (err) {
             console.error("Error deleting skill:", err);
             const errorMessage = err.response?.data?.message || "Failed to delete skill. Please try again.";
-            message.error(errorMessage);
+            AlertService.error(errorMessage);
         }
     };
 
