@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { getCategoriesByIndustry } from "../Common/jobSettingsService";
-import { createIndustry, getAllIndustries, updateIndustry } from "./Industry";
+import { createIndustry, getAllIndustries, updateIndustry, deleteIndustry } from "./Industry";
 import {
   Box,
   Button,
@@ -13,7 +13,7 @@ import {
   IconButton,
   Stack,
 } from "@mui/material";
-import AlertService from "../Common/AlertService";
+import { AlertService } from "../Common/AlertService";
 import { Table } from "antd";
 import Category from "./Category.jsx";
 import "../Common/Design.css";
@@ -52,10 +52,26 @@ const Industry = () => {
     fetchIndustries();
   }, []);
 
+  // Safe alert helper: uses AlertService if method exists, otherwise falls back to window.alert
+  const showAlert = (type, message) => {
+    if (AlertService && typeof AlertService[type] === "function") {
+      AlertService[type](message);
+    } else if (AlertService && typeof AlertService.show === "function") {
+      // in case AlertService has a generic show(type, message) method
+      try {
+        AlertService.show(type, message);
+      } catch {
+        window.alert(message);
+      }
+    } else {
+      window.alert(message);
+    }
+  };
+
   // ✅ Handle Add / Update Industry
   const handleSaveIndustry = async () => {
     if (!newIndustry.trim()) {
-      AlertService.warning("Industry name is required");
+      showAlert("warning", "Industry name is required");
       return;
     }
 
@@ -72,7 +88,28 @@ const Industry = () => {
       fetchIndustries();
     } catch (err) {
       console.error("Error saving industry:", err);
-      AlertService.error("Failed to save industry");
+      showAlert("error", "Failed to save industry");
+    }
+  };
+
+  // ✅ Handle Delete Industry
+  const handleDeleteIndustry = async (industryId) => {
+    if (!industryId) return;
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this industry? This will remove its categories as well."
+    );
+    if (!confirmed) return;
+
+    try {
+      setLoading(true);
+      await deleteIndustry(industryId, authToken);
+      showAlert("success", "Industry deleted successfully");
+      fetchIndustries();
+    } catch (err) {
+      console.error("Error deleting industry:", err);
+      showAlert("error", "Failed to delete industry");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -167,10 +204,21 @@ const Industry = () => {
               backgroundColor: "#f57c00",
               "&:hover": { backgroundColor: "#ef6c00" },
               textTransform: "none",
+              mr: 1,
             }}
             onClick={() => handleAddCategory(record)}
           >
             Add Category
+          </Button>
+
+          <Button
+            variant="contained"
+            color="error"
+            size="small"
+            sx={{ textTransform: "none" }}
+            onClick={() => handleDeleteIndustry(record.id)}
+          >
+            Delete
           </Button>
         </Box>
       ),

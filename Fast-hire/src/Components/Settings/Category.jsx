@@ -4,7 +4,9 @@ import {
   createCategory,
   getAllCategories,
   updateCategory,
+  deleteCategory,
 } from "./Category";
+import { AlertService } from "../Common/AlertService";
 import {
   Box,
   Button,
@@ -20,6 +22,7 @@ import { Table } from "antd";
 import SearchIcon from "@mui/icons-material/Search";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import Subcategory from "./SubCategory.jsx";
+import DeleteIcon from "@mui/icons-material/Delete";
 import "../Common/Design.css";
 
 const Category = ({ onBack, industryId, industryName }) => {
@@ -33,6 +36,7 @@ const Category = ({ onBack, industryId, industryName }) => {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [categorySubcategories, setCategorySubcategories] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   // ✅ Fetch all categories
   const fetchCategories = async () => {
@@ -45,6 +49,7 @@ const Category = ({ onBack, industryId, industryName }) => {
       setCategories(data);
     } catch (err) {
       console.error("Error fetching categories:", err);
+      AlertService.error("Failed to fetch job roles");
     } finally {
       setLoading(false);
     }
@@ -56,21 +61,39 @@ const Category = ({ onBack, industryId, industryName }) => {
 
   // ✅ Save or update category
   const handleSave = async () => {
-    if (!newCategory.trim()) return alert("Job Role name is required");
+    if (!newCategory.trim()) {
+      AlertService.warning("Job Role name is required");
+      return;
+    }
 
-    const payload = { categoryname: newCategory, industryId };
+    if (!industryId) {
+      AlertService.error("Missing industry selection. Please select an industry.");
+      return;
+    }
+
+    const payload = { categoryname: newCategory }; // send industryId as query param via API helper
     try {
+      setSaving(true);
       if (editCategory) {
-        await updateCategory(editCategory.id, payload, authToken);
+        await updateCategory(editCategory.id, payload, authToken, industryId);
       } else {
-        await createCategory(payload, authToken);
+        await createCategory(payload, authToken, industryId);
       }
       setOpenDialog(false);
       setNewCategory("");
       setEditCategory(null);
+      AlertService.success("Job role saved successfully");
       fetchCategories();
     } catch (err) {
       console.error("Error saving category:", err);
+      const serverMessage =
+        err?.response?.data?.message ||
+        err?.response?.data ||
+        err.message ||
+        "Failed to save job role";
+      AlertService.error(serverMessage);
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -93,6 +116,23 @@ const Category = ({ onBack, industryId, industryName }) => {
     setShowSubcategories(false);
     setSelectedCategory(null);
     fetchCategories();
+  };
+
+  // New: delete handler using AlertService and API
+  const handleDeleteCategory = async (category) => {
+    const confirmed = await AlertService.confirm(
+      `Do you really want to delete the job role "${category.categoryname}"?`
+    );
+    if (!confirmed) return;
+
+    try {
+      await deleteCategory(category.id, authToken);
+      AlertService.success("Job role deleted successfully");
+      fetchCategories();
+    } catch (err) {
+      console.error("Error deleting category:", err);
+      AlertService.error("Failed to delete job role");
+    }
   };
 
   const filteredCategories = categories.filter(
@@ -129,18 +169,34 @@ const Category = ({ onBack, industryId, industryName }) => {
       title: "Action",
       key: "action",
       render: (_, record) => (
-        <Button
-          variant="contained"
-          size="small"
-          sx={{
-            backgroundColor: "#f57c00",
-            "&:hover": { backgroundColor: "#ef6c00" },
-            textTransform: "none",
-          }}
-          onClick={() => handleAddSubcategory(record)}
-        >
-          Add Subcategory
-        </Button>
+        <Box sx={{ display: "flex", gap: 1 }}>
+          <Button
+            variant="contained"
+            size="small"
+            sx={{
+              backgroundColor: "#f57c00",
+              "&:hover": { backgroundColor: "#ef6c00" },
+              textTransform: "none",
+            }}
+            onClick={() => handleAddSubcategory(record)}
+          >
+            Add Subcategory
+          </Button>
+
+          {/* New: Delete button */}
+          <Button
+            variant="contained"
+            size="small"
+            sx={{
+              backgroundColor: "#d32f2f",
+              "&:hover": { backgroundColor: "#c62828" },
+              textTransform: "none",
+            }}
+            onClick={() => handleDeleteCategory(record)}
+          >
+            Delete
+          </Button>
+        </Box>
       ),
     },
   ];
@@ -266,6 +322,7 @@ const Category = ({ onBack, industryId, industryName }) => {
               textTransform: "none",
             }}
             onClick={handleSave}
+            disabled={saving}
           >
             {editCategory ? "Update" : "Save"}
           </Button>

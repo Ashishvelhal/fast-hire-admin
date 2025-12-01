@@ -124,7 +124,7 @@ const CreateEmploye = () => {
         await updateEmployer(editId, formDataObj, authToken);
         message.success("Employer updated successfully!");
       } else {
-        await createEmployer(formDataObj, null, null, authToken); 
+        await createEmployer(formDataObj, null, null, authToken);
         message.success("Employer created successfully!");
       }
     } catch (error) {
@@ -251,8 +251,8 @@ const CreateEmploye = () => {
         <Grid item xs={12} sm={12} md={6}>
           <Box display="flex" alignItems="center" gap={1}>
             <Button variant="outlined" component="label" size="small">
-              Upload Shop Act
-              <input
+              Reg. No / CIN / Shop Act No.             
+               <input
                 type="file"
                 hidden
                 onChange={(e) => setShopActFile(e.target.files[0])}
@@ -495,8 +495,8 @@ const CreateEmploye = () => {
               ? "Updating..."
               : "Registering..."
             : isEdit
-            ? "Update"
-            : "Submit"}
+              ? "Update"
+              : "Submit"}
         </Button>
       </Box>
     </Box>

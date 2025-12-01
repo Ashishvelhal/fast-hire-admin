@@ -1,14 +1,16 @@
 import axiosInstance from "../Common/axiosConfig"; 
 
-export const createCategory = async (category, token) => {
+export const createCategory = async (category, token, industryId) => {
   return axiosInstance.post("/createCategory", category, {
     headers: { Authorization: `Bearer ${token}` },
+    params: industryId ? { industryId } : {},
   });
 };
 
-export const getAllCategories = async (token) => {
+export const getAllCategories = async (token, industryId) => {
   return axiosInstance.get("/getAllCategories", {
     headers: { Authorization: `Bearer ${token}` },
+    params: industryId ? { industryId } : {},
   });
 };
 
@@ -18,9 +20,10 @@ export const getCategoryById = async (id, token) => {
   });
 };
 
-export const updateCategory = async (id, category, token) => {
+export const updateCategory = async (id, category, token, industryId) => {
   return axiosInstance.put(`/updateCategory/${id}`, category, {
     headers: { Authorization: `Bearer ${token}` },
+    params: industryId ? { industryId } : {},
   });
 };
 
