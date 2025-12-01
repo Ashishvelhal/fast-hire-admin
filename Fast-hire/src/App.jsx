@@ -70,14 +70,7 @@ const App = () => {
                 <Route path="managerlist" element={<ManagerList />} />
               </Route>
               <Route path="settings" element={<Settings />} />
-
-              {/* <Route path="*" element={<Navigate to="dashboard" replace />} /> */}
             </Route>
-
-            {/* <Route path="/super-admin/*" element={<SuperAdminRoutes />} /> */}
-
-            {/* <Route path="/" element={<Navigate to="/admin" replace />} />
-            <Route path="*" element={<Navigate to="/admin" replace />} /> */}
           </Routes>
         </ErrorBoundary>
       </Suspense>

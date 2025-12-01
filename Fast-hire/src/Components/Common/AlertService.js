@@ -1,8 +1,8 @@
-// src/services/AlertService.js
+import React from 'react';
 import Swal from 'sweetalert2';
 import './AlertZIndex.css';
 
-const AlertService = {
+export const AlertService = {
   success: (message) => {
     Swal.fire({
       icon: 'success',
@@ -48,4 +48,9 @@ const AlertService = {
   },
 };
 
-export default AlertService;
+// Default export: a lightweight React component (renders null) so you can import and mount it if desired.
+// Keeps file as a JSX module per request.
+export default function AlertServiceComponent() {
+  // The component doesn't need to render UI — CSS import above ensures z-index class is available.
+  return null;
+}

@@ -1,17 +1,7 @@
-import axios from "axios";
-
-// ✅ Base URL for your backend
-const BASE_URL = "http://localhost:8081"; 
-
-// const BASE_URL = "https://fasthire.in:14443"
-
-// ✅ Create a new enquiry for a specific course
+import axiosInstance from "../Common/axiosConfig"; // adjust path if needed
 export const createEnquiry = async (courseId, enquiryData) => {
   try {
-    const response = await axios.post(
-      `${BASE_URL}/enquiry/${courseId}`,
-      enquiryData
-    );
+    const response = await axiosInstance.post(`/enquiry/${courseId}`, enquiryData);
     return response.data;
   } catch (error) {
     console.error("Error creating enquiry:", error);
@@ -19,10 +9,9 @@ export const createEnquiry = async (courseId, enquiryData) => {
   }
 };
 
-// ✅ Fetch all enquiries
 export const getAllEnquiries = async () => {
   try {
-    const response = await axios.get(`${BASE_URL}/getallenquiry`);
+    const response = await axiosInstance.get(`/admission-getallenquiry`);
     return response.data;
   } catch (error) {
     console.error("Error fetching enquiries:", error);
@@ -30,10 +19,9 @@ export const getAllEnquiries = async () => {
   }
 };
 
-// ✅ Get enquiry by ID
 export const getEnquiryById = async (id) => {
   try {
-    const response = await axios.get(`${BASE_URL}/getenquirybyid/${id}`);
+    const response = await axiosInstance.get(`/getenquirybyid/${id}`);
     return response.data;
   } catch (error) {
     console.error("Error fetching enquiry by ID:", error);
@@ -41,13 +29,9 @@ export const getEnquiryById = async (id) => {
   }
 };
 
-// ✅ Update enquiry by ID
 export const updateEnquiry = async (eid, enquiryData) => {
   try {
-    const response = await axios.put(
-      `${BASE_URL}/update-enquiry/${eid}`,
-      enquiryData
-    );
+    const response = await axiosInstance.put(`/update-enquiry/${eid}`, enquiryData);
     return response.data;
   } catch (error) {
     console.error("Error updating enquiry:", error);
@@ -55,10 +39,9 @@ export const updateEnquiry = async (eid, enquiryData) => {
   }
 };
 
-// ✅ Delete enquiry by ID
 export const deleteEnquiry = async (eid) => {
   try {
-    const response = await axios.delete(`${BASE_URL}/deleteenquiry/${eid}`);
+    const response = await axiosInstance.delete(`/deleteenquiry/${eid}`);
     return response.data;
   } catch (error) {
     console.error("Error deleting enquiry:", error);

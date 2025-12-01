@@ -169,9 +169,9 @@ const SuperAdminLogin = () => {
 
         <div style={{ display: "flex", justifyContent: "space-between", marginTop: "20px" }}>
           <a href="#forgot" className="forgot-link">Forgot Password?</a>
-          {/* <span className="forgot-link" style={{ cursor: "pointer" }} onClick={() => setRegisterOpen(true)}>
+          <span className="forgot-link" style={{ cursor: "pointer" }} onClick={() => setRegisterOpen(true)}>
             Register
-          </span> */}
+          </span>
         </div>
       </div>
       <Dialog open={registerOpen} onClose={() => setRegisterOpen(false)} maxWidth="lg" fullWidth>
